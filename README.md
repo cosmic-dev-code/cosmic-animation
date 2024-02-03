@@ -4,6 +4,12 @@
 
 # Import CosmicAnimation
 
+Use the NPM package manager to install the CosmicAnimation library.
+
+```bat
+    npm install cosmic-animation
+```
+
 Import the library using **CosmicAnimation**.
 
 ```js
