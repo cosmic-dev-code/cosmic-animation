@@ -1,0 +1,31 @@
+{
+  "name": "cosmic-animation",
+  "version": "1.0.0",
+  "description": "A library for creating fast and robust CSS animations with JavaScript. Minimalistic and effective.",
+  "keywords": ["animation", "animations", "cosmic", "astro", "fantastic", "javascript", "js", "css", "minimalist"],
+
+  "author": {
+    "name": "Brandon Anthony", 
+    "email": "brandonolivares.developer@gmail.com", 
+    "url": "https://webdev.brandondeveloper.com/"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm/cli.git"
+  },
+  "homepage": "https://github.com/npm/cli.git#readme", 
+
+  "license": "ISC",
+  "browser": "dist-browser/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1", 
+    "build-browser": "npx babel src/index.js --out-file dist-browser/index.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "babel-preset-env": "^1.7.0"
+  }
+}
