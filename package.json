@@ -12,9 +12,9 @@
 
   "repository": {
     "type": "git",
-    "url": "https://github.com/npm/cli.git"
+    "url": "https://github.com/cosmic-dev-code/cosmic-animation"
   },
-  "homepage": "https://github.com/npm/cli.git#readme", 
+  "homepage": "https://github.com/cosmic-dev-code/cosmic-animation#readme", 
 
   "license": "ISC",
   "browser": "dist-browser/index.js",
