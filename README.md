@@ -2,6 +2,14 @@
 
 **(CosmicAnimation)** is an alternative for creating dynamic CSS animations using JavaScript, it is easy to use, easy to implement and requires no additional effort.
 
+# Import CosmicAnimation
+
+Import the library using **CosmicAnimation**.
+
+```js
+    import CosmicAnimation from 'cosmic-animation';
+```
+
 # Instances
 
 Assuming you have an element you want to animate.
