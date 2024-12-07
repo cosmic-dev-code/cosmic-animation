@@ -1,12 +1,15 @@
+// Interfaces
+import { CosmicAnimateResources, CosmicAnimateSettings, CosmicAnimateValidations, CosmicAnimateViewport } from "./interfaces/animation";
+
 /**
  * @class CosmicAnimation
  */
 class CosmicAnimation{
 	// Por defecto crea un elemento DIV.
-	target = document.createElement('div');
+	public target:HTMLElement = document.createElement('div');
 
 	// Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
-	#resources = new Object({
+	private resources:CosmicAnimateResources = {
 		type: 'default',
 		// Tres partes. 3/3
 		partsThree: {
@@ -37,10 +40,22 @@ class CosmicAnimation{
 			part5: [], part6: [], part7: [], part8: [], 
 			part9: []
 		}
-	});
+	};
+
+	private validations:CosmicAnimateValidations = {
+		numeric: /^[0-9]$/, 
+		empty: function(data:any):boolean{
+			return (
+				data === undefined || 
+				data === null || 
+				Number.isNaN(data) || 
+				data === ""
+			);
+		}
+	};
 
 	// Ajustes comunes de una animacion CSS.
-	animation = new Object({
+	public animation:CosmicAnimateSettings = {
 		name: 'name',
 		delay: 0,
 		duration: 1500,
@@ -48,66 +63,77 @@ class CosmicAnimation{
 		direction: 'normal',
 		timingFunction: 'linear',
 		fillMode: 'forwards'
-	});
+	};
 
 	// Configura si quieres que la animacion se ejecute cuando el elemento este visible en el viewport.
-	observeViewport = new Object({
+	observeViewport:CosmicAnimateViewport = {
 		enabled: false,
 		infinite: false // Indica si solo se ejecuta una vez o cada vez que entre y salga del viewport.
-	});
+	};
+
+	private createAutomaticName():string{
+		return ("cosmic-animation-"+Math.round(Math.random()*300));
+	}
 
 	/**
 	 * El constructor puede retornar un objeto CosmicAnimation o un arreglo de objetos CosmicAnimacion.
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {string|string[]} selector
 	 * @param {string|string[]} name
 	 * @return {CosmicAnimation|CosmicAnimation[]}
 	 */
-	constructor(selector = null, name = ("cosmic-animation-"+Math.round(Math.random()*300))){
-		// Verifica que el selector recibido sea algo.
-		if(selector === null || selector === undefined || selector === NaN){
-			this.#error('The selector ('+selector+') is not valid.');
-		// Verifica si se trata de un arreglo.
+	constructor(selector?:string|string[], name?:string|string[]){
 
-		}else if(/^[0-9]$/.test(selector) || typeof selector === "number"){
+		if(!name) name = this.createAutomaticName() as string;
+
+		if(this.validations.empty(selector)){
 			this.#error('The selector ('+selector+') is not valid.');
+
+		// Primer Arreglo.
 		}else if(Array.isArray(selector)){
+			const arrCosmicsElements:CosmicAnimation[] = new Array();
 
-			// Se crea un arrglo para almacenar los objetos CosmicAnimation.
-			var arrCosmicsElements = new Array();
-
-			// Verificamos si recibimos un arreglo con los nombres[] de animacion para cada selector[].
+			// Segundo Arreglo.
 			if(Array.isArray(name)){
+				// Verificamos si recibimos un arreglo con los nombres[] de animacion para cada selector[].
 				for(let i in selector){
-					// Se extrae el nombre de animacion.
-					let nameTemporary = name[i];
+					// Selector y Animacion
+					const selectorName:string = selector[i], 
+						  animationName:string = name[i];
 
-					if(nameTemporary !== null && nameTemporary !== undefined){
-						// Se relaciona el primer nombre con el primer nombre de animacion.
-						arrCosmicsElements.push(new CosmicAnimation(selector[i], name[i]));
+					if(!this.validations.empty(selectorName) && !this.validations.empty(animationName)){
+						// Se relaciona cada Nombre con su Animacion.
+						arrCosmicsElements.push(new CosmicAnimation(selectorName, animationName));
 					}else{
-						arrCosmicsElements.push(new CosmicAnimation(selector[i]));
+						// Nombre de animacion automatica.
+						arrCosmicsElements.push(new CosmicAnimation(animationName));
 					}
 				}
+			// Solo fue el primer arreglo, (nombres de animacion automaticos).
 			}else{
 				for(let i in selector) arrCosmicsElements.push(new CosmicAnimation(selector[i]));
 			}
 
+			// @ts-ignore
 			// Retorna un arreglo de objetos CosmicAnimation.
 			return arrCosmicsElements;
-		// Si el objeto pasado como argumento no fue un arreglo, entonces es un selector.
 		}else{
+			const select = selector as string;
+
+			// No tiene sentido tener un Selector y varios nombres de animacion.
+			if(Array.isArray(name)) name = name[0];
+
 			// Se comprueba que el selector pasado por argumento exista dentro del DOM.
 			try{
-				let element = document.querySelector(selector);
+				const element:HTMLElement|null = document.querySelector(select);
+
+				if(!element){
+					this.#warning("The selector (" + select + ") not exists in DOM.");
 
 				// Creamos el objeto CosmicAnimation.
-
-				if(element !== null && element !== undefined){
+				}else{
 					this.target = element;
 					this.animation.name = name;
-				}else{
-					this.#warning("The selector (" + selector + ") not exists in DOM.");
 				}
 			}catch(error){
 				this.#error(`Error when extracting the selector (${selector})`);
@@ -117,13 +143,11 @@ class CosmicAnimation{
 
 	/**
 	 * Para mandar mensajes de errores internos.
-	 * 
-	 * @param {string}
-	 * @return {void}
-	 * 
-	 * Recibe multiples parametros.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {string[]} arguments
+	 * @returns {void}
 	*/
-	#error(){
+	#error(args?:string):void{
 		if(arguments.length > 1){
 			for(let arg of arguments) this.#error(arg);
 		}else{
@@ -140,7 +164,7 @@ class CosmicAnimation{
 	}
 
 	// Mensaje de advertencia, es lo mismo que el anterior.
-	#warning(){
+	#warning(args?:string):void{
 		if(arguments.length > 1){
 			for(let arg of arguments) this.#warning(arg);
 		}else{
@@ -157,176 +181,203 @@ class CosmicAnimation{
 	}
 
 	/**
-	 * Este metodo interno es quien separa por partes la animacion.
-	 * 
-	 * Solo para propiedades normales, (no transformaciones CSS, ya que esas requiere llamarse): 
-	 * 	--- opacity: 5; - Propiedad normal.
-	 * 	--- transform: scale(1); - Propiedad de transformacion.
-	 * 
-	 * @param {string} part Puede ser (string === "inicio - fin"). O puede ser ("3/5").
+	 * Funcion para guardar cada propiedad en el arreglo de cada parte, sea: 
+	 * 		--- Novenos, Quintos o Tercios.
+	 * (start) y (end) NO reciben numeros, sino propiedades con los numeros ya incluidos, ejemplo: 
+	 * 		@example addResources("height: 10px", "height: 100px")
+	 * 		@example addResources("height: 10px", "height: '1/3'", '1/3')
+	 * 		@example addResources("height: 10px", "height: '1/3','2/3'", ['1/3', '2/3'])
+	 * Donde (end) no se toma en cuenta ya que (start) se asigna a '1/3' o se asigna a ['1/3', '2/3'].
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {string} start
+	 * @param {string} end
+	 * @param {string|string[]|number} parts
+	 * @returns {void}
 	 */
-	#addResources(part = null, start = 0, end = 0){
-		if(Array.isArray(part)){
-			part.forEach(partElement => this.#addResources(partElement, start));
-			return 0;
+	#addResources(start:string, end:string, parts:string|string[]|number){
+		/**
+		 * Si lo final es un numero, significa que hemos recibido: 
+		 * 		@example funcion(start, parts)
+		 * 		@example funcion(1, 1)
+		 * Y esto por defecto hace que (start) y (end) posean las 
+		 * propiedades declaradas a guardar en el arreglo por defecto.
+		 */
+		if(typeof parts === "number"){
+			this.resources.parts.part1.push(start);
+			this.resources.parts.part5.push(end);
+			return;
 		}
 
-		if(typeof part === "string"){
-			if(part.includes("/9")){
-				this.#resources.type = "nine";
-				switch(part){
-					case "1/9": this.#resources.partsNine.part1.push(start); break;
-					case "2/9": this.#resources.partsNine.part2.push(start); break;
-					case "3/9": this.#resources.partsNine.part3.push(start); break;
-					case "4/9": this.#resources.partsNine.part4.push(start); break;
-					case "5/9": this.#resources.partsNine.part5.push(start); break;
-					case "6/9": this.#resources.partsNine.part6.push(start); break;
-					case "7/9": this.#resources.partsNine.part7.push(start); break;
-					case "8/9": this.#resources.partsNine.part8.push(start); break;
-					case "9/9": this.#resources.partsNine.part9.push(start); break;
-					default: break;
+		/**
+		 * Si (parts) es un string, significa que el usuario introdujo: 
+		 * 		@example funcion(start, parts)
+		 * 		@example funcion(1, '1/3')
+		 * Lo que significa que (start) posee la propiedad a guardar 
+		 * en el arreglo pertinente segun (parts), (end) no es necesario.
+		 */
+		if(typeof parts === "string"){
+			let firstNumber:string = parts.split("/")[0], // 1
+				partName:string = `part${firstNumber}`; // part1, part2, part3, ...
+		
+			if(parts.includes("/9")){
+				this.resources.type = "nine";
+		
+				// @ts-ignore
+				if(Array.isArray(this.resources.partsNine[partName])){
+					// @ts-ignore
+					this.resources.partsNine[partName].push(start);
 				}
-				return false;
-			}else if(part.includes("/3")){
-				this.#resources.type = "three";
-				switch(part){
-					case "1/3": this.#resources.partsThree.part1.push(start); break;
-					case "2/3": this.#resources.partsThree.part2.push(start); break;
-					case "3/3": this.#resources.partsThree.part3.push(start); break;
-					default: break;
+				return;
+			}else if(parts.includes("/3")){
+				this.resources.type = "three";
+		
+				// @ts-ignore
+				if(Array.isArray(this.resources.partsThree[partName])){
+					// @ts-ignore
+					this.resources.partsThree[partName].push(start);
 				}
-				return false;
+				return;
+			}else if(parts.includes("/5")){
+				// Indicar que es por defecto.
+				this.resources.type = "default";
+		
+				// @ts-ignore
+				if(Array.isArray(this.resources.parts[partName])){
+					// @ts-ignore
+					this.resources.parts[partName].push(start);
+				}
+				return;
 			}
 		}
 
-		this.#resources.type = "default";
-		switch(part){
-			case "1/5": this.#resources.parts.part1.push(start); break;
-			case "2/5": this.#resources.parts.part2.push(start); break;
-			case "3/5": this.#resources.parts.part3.push(start); break;
-			case "4/5": this.#resources.parts.part4.push(start); break;
-			case "5/5": this.#resources.parts.part5.push(start); break;
-			default: this.#resources.parts.part1.push(start); this.#resources.parts.part5.push(end); break;
-		}
-	}
+		/**
+		 * Si (parts) es un array, significa que el usuario introdujo: 
+		 * 		@example funcion(start, parts)
+		 * 		@example funcion(1, ['1/3', '3/3'])
+		 * Lo que significa que (start) posee la propiedad a guardar, y se iteran cada 
+		 * uno de los elementos del array, para guardar en cada parte el primer valor, (start).
+		 */
+		if(Array.isArray(parts)){
+			for(let part of parts){
 
-	/**
-	 * Este metodo interno separa las animaciones por partes, (como el anterior).
-	 * 
-	 * Solo para propiedades de transformacion, (no normales, ya que esas no requieren llamarse): 
-	 * 	--- opacity: 5; - Propiedad normal.
-	 * 	--- transform: scale(1); - Propiedad de transformacion.
-	 */
-	#addResourcesTransform(part = null, start = 0, end = 0){
-		if(Array.isArray(part)){
-			part.forEach(partElement => {
-				this.#addResourcesTransform(partElement, start);
-			});
-			return false;
-		}
+				if(typeof part !== "string"){
+					this.#error(`Data {${part}} is not accepted in {string[]}`);
+					return;
+				}
 
-		if(typeof part === "string"){
-			if(part.includes("/9")){
-				this.#resources.type = "nine";
-				switch(part){
-					case "1/9": this.#resources.partsNineTransform.part1.push(start); break;
-					case "2/9": this.#resources.partsNineTransform.part2.push(start); break;
-					case "3/9": this.#resources.partsNineTransform.part3.push(start); break;
-					case "4/9": this.#resources.partsNineTransform.part4.push(start); break;
-					case "5/9": this.#resources.partsNineTransform.part5.push(start); break;
-					case "6/9": this.#resources.partsNineTransform.part6.push(start); break;
-					case "7/9": this.#resources.partsNineTransform.part7.push(start); break;
-					case "8/9": this.#resources.partsNineTransform.part8.push(start); break;
-					case "9/9": this.#resources.partsNineTransform.part9.push(start); break;
-					default: break;
-				}
-				return false;
-			}else if(part.includes("/3")){
-				this.#resources.type = "three";
-				switch(part){
-					case "1/3": this.#resources.partsThreeTransform.part1.push(start); break;
-					case "2/3": this.#resources.partsThreeTransform.part2.push(start); break;
-					case "3/3": this.#resources.partsThreeTransform.part3.push(start); break;
-					default: break;
-				}
-				return false;
+				this.#addResources(start, "", part);
 			}
-		}
-
-		this.#resources.type = "default";
-		switch(part){
-			case "1/5": this.#resources.partsTransform.part1.push(start); break;
-			case "2/5": this.#resources.partsTransform.part2.push(start); break;
-			case "3/5": this.#resources.partsTransform.part3.push(start); break;
-			case "4/5": this.#resources.partsTransform.part4.push(start); break;
-			case "5/5": this.#resources.partsTransform.part5.push(start); break;
-			default: this.#resources.partsTransform.part1.push(start); this.#resources.partsTransform.part5.push(end); break;
 		}
 	}
 
 	// Transformaciones.
 	// Como puedes observar las propiedades de transformacion se almacenan en otro lugar.
 
-	scale(start = 1, end = 1){
-		this.#addResourcesTransform(end, ('scale('+start+')'), ('scale('+end+')'));
+	public scale(start:number = 1, end:string|string[]|number = 1):CosmicAnimation{
+		this.#addResources(end, `scale(${start})`, `scale(${end})`);
 		return this;
 	}
 
-	translateY(start = 0, end = 0){
-		this.#addResourcesTransform(end, ('translateY('+start+'px)'), ('translateY('+end+'px)'));
+	public translateY(start = 0, end = 0){
+		this.#addResources(end, ('translateY('+start+'px)'), ('translateY('+end+'px)'));
 		return this;
 	}
 
 	translateX(start = 0, end = 0){
-		this.#addResourcesTransform(end, ('translateX('+start+'px)'), ('translateX('+end+'px)'));
+		this.#addResources(end, ('translateX('+start+'px)'), ('translateX('+end+'px)'));
 		return this;
 	}
 
 	rotate(start = 0, end = 0){
-		this.#addResourcesTransform(end, ('rotate('+start+'deg)'), ('rotate('+end+'deg)'));
+		this.#addResources(end, ('rotate('+start+'deg)'), ('rotate('+end+'deg)'));
 		return this;
 	}
 
-	// Propiedades.
-	// Las propiedades normales se almacenan por separado de las transformaciones.
-
-	opacity(start = 1, end = 1){
-		this.#addResources(end, ('opacity: '+start+';'), ('opacity: '+end+';'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example opacity(0.5, 1)
+	 * @example opacity(0.5, '1/5')
+	 * @example opacity(0.5, ['1/3', '2/3'])
+	 */
+	opacity(start:number = 0, end:string|string[]|number = 1):CosmicAnimation{
+		this.#addResources(('opacity: '+start+';'), ('opacity: '+end+';'), end);
 		return this;
 	}
 
-	bgColor(start = "red", end = "red"){
-		this.#addResources(end, ('background-color: '+start+';'), ('background-color: '+end+';'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example bgColor("blue", "red")
+	 * @example bgColor("blue", '1/5')
+	 * @example bgColor("blue", ['1/3', '2/3'])
+	 */
+	bgColor(start:string = "red", end:string = "red"):CosmicAnimation{
+		this.#addResources(('background-color: '+start+';'), ('background-color: '+end+';'), end);
 		return this;
 	}
 
-	color(start = "black", end = "black"){
-		this.#addResources(end, ('color: '+start+';'), ('color: '+end+';'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example color("blue", "red")
+	 * @example color("blue", '1/5')
+	 * @example color("blue", ['1/3', '2/3'])
+	 */
+	color(start:string = "black", end:string = "black"):CosmicAnimation{
+		this.#addResources(('color: '+start+';'), ('color: '+end+';'), end);
 		return this;
 	}
 
-	width(start = 300, end = 300){
-		this.#addResources(end, ('width: '+start+'px;'), ('width: '+end+'px;'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example width(300, 700)
+	 * @example width(300, '1/5')
+	 * @example width(300, ['1/3', '2/3'])
+	 */
+	width(start:number = 300, end:number = 300):CosmicAnimation{
+		this.#addResources(('width: '+start+'px;'), ('width: '+end+'px;'), end);
 		return this;
 	}
 
-	height(start = 300, end = 300){
-		this.#addResources(end, ('height: '+start+'px;'), ('height: '+end+'px;'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example height(300, 700)
+	 * @example height(300, '1/5')
+	 * @example height(300, ['1/3', '2/3'])
+	 */
+	height(start:number = 300, end:number = 300):CosmicAnimation{
+		this.#addResources(('height: '+start+'px;'), ('height: '+end+'px;'), end);
 		return this;
 	}
 
-	padding(start = 300, end = 300){
-		this.#addResources(end, ('padding: '+start+'px;'), ('padding: '+end+'px;'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example padding(10, 6)
+	 * @example padding(10, '1/5')
+	 * @example padding(10, ['1/3', '2/3'])
+	 */
+	padding(start:number = 300, end:number = 300):CosmicAnimation{
+		this.#addResources(('padding: '+start+'px;'), ('padding: '+end+'px;'), end);
 		return this;
 	}
 
-	margin(start = 300, end = 300){
-		this.#addResources(end, ('margin: '+start+'px;'), ('margin: '+end+'px;'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example margin(10, 6)
+	 * @example margin(10, '1/5')
+	 * @example margin(10, ['1/3', '2/3'])
+	 */
+	margin(start:number = 300, end:number = 300):CosmicAnimation{
+		this.#addResources(('margin: '+start+'px;'), ('margin: '+end+'px;'), end);
 		return this;
 	}
 
-	addProperty(cssStart = "", cssEnd = ""){
-		this.#addResources(cssEnd, cssStart, cssEnd);
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example addProperty("border: 2px solid #000;", "border: 6px solid blue;")
+	 * @example addProperty("border: 2px solid #000;", '1/5')
+	 * @example addProperty("border: 2px solid #000;", ["2/5", "3/5", "4/5"])
+	 */
+	addProperty(cssStart:string = "", cssEnd:string = ""):CosmicAnimation{
+		this.#addResources(cssStart, cssEnd, cssEnd);
 		return this;
 	}
 
@@ -357,7 +408,7 @@ class CosmicAnimation{
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	fromWindowTo(mode = "right", duration = 2000, delay = 0){
+	fromWindowShowTo(mode = "right", duration = 2000, delay = 0){
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in-out';
@@ -1004,5 +1055,3 @@ class CosmicAnimation{
 		}
 	}
 }
-
-export default CosmicAnimation;
