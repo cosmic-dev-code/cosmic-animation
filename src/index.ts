@@ -849,7 +849,7 @@ class CosmicAnimation{
 	 * Validaciones para los ajustes de la animacion.
 	 * @author Brandon Anthony Olivares Amador
 	 */
-	#validate():void{
+	#validateAnimationSettings():void{
 		// Las iteraciones deben ser un (numero entero), (pero puede ser Infinity)
 		if(!Number.isInteger(this.animation.iterationCount)){
 			this.animation.iterationCount = 1;
@@ -868,157 +868,111 @@ class CosmicAnimation{
 
 	// Ejecuta las animaciones.
 	execute(){
-		// Crea un archivo (style).
-		var style = document.createElement('style');
-		style.setAttribute('type', 'text/css');
+		// Crea una etiqueta <style> para asignar la animacion.
+		var style:HTMLStyleElement = document.createElement('style');
+			style.setAttribute('type', 'text/css');
 
-		// Lo inyecta al DOM.
+		// Si ya hay un style en nuestro DOM, pues tomamos ese.
 		if(document.getElementsByTagName('style')[0] !== undefined){
+			// tomamos el primer <style>
 			style = document.getElementsByTagName('style')[0];
 		}
-
-		const empty = resource => {
-			if(resource.length > 0) return (`transform: ${resource.join(' ')};`);
+		
+		// Toma un arreglo de transformaciones y lo convierte a "string".
+		const transformPropertiesToCSS = (part:string[]) => {
+			if(part.length > 0) return (`transform: ${part.join(' ')};`);
 			else return ("");
-		};
-
-		const isUndefined = resource => {
-			if(resource === null || resource === undefined) return '';
-			else return resource;
 		};
 
 		// Este objeto contendra varios objetos, las partes de la animacion.
 		/**
-		 * {
-		 * 	value: `
-		 * 		0%{ animaciones }
-		 * 	`
-		 * }
+		 *  {
+		 * 	   value: `
+		 * 		  0%{ animaciones }
+		 * 	   `
+		 *  }
 		*/
-		let parts = {};
+		const ANIMATION_PARTS = {};
 
 		// Representacion de las partes del objeto, recordemos (3/3), (5/5) y (9/9).
-		let keysThree = ['part1', 'part2', 'part3'];
-		let keys = ['part1', 'part2', 'part3', 'part4', 'part5'];
-		let keysNine = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7', 'part8', 'part9'];
+		let partsThree:string[] = ['part1', 'part2', 'part3'];
 		// La relacion en (%) de las partes.
 		// Solo divide, (100% / 3) === (0%, 50%, 100%) === 3/3. Recuerda que el (0%) indica donde inicia la animacion.
-		let numbersThree = ['0%', '50%', '100%'];
-		let numbers = ['0%', '25%', '50%', '75%', '100%'];
-		let numbersNine = ['0%', '12.5%', '25%', '37.5%', '50%', '62.5%', '75%', '87.5%', '100%'];
+		let percentageThree:string[] = ['0%', '50%', '100%'];
 
-		/**
-		 * Aqui creamos un objeto con todas las etapas de la animacion y sus propiedades.
-		 */
+		let partsFive:string[] = ['part1', 'part2', 'part3', 'part4', 'part5'];
+		let percentageFive:string[] = ['0%', '25%', '50%', '75%', '100%'];
 
-		// Comprueba si el usuario utilizo una animacion (5/5).
-		if(this.#resources.type === "default"){
-			// Itera cinco veces.
-			for(let i in keys){
-				// Extrae las propiedades, (normales) y (transformaciones).
-				let valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsTransform, keys[i]);
-				let valueNormal = Object.getOwnPropertyDescriptor(this.#resources.parts, keys[i]);
-				valueTransform = valueTransform.value;
-				valueNormal = valueNormal.value;
+		let partsNine:string[] = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7', 'part8', 'part9'];
+		let percentageNine:string[] = ['0%', '12.5%', '25%', '37.5%', '50%', '62.5%', '75%', '87.5%', '100%'];
 
-				/* Si el elemento tiene una animacion, entonces el objeto (parts) agrega la animacion: 
-					--- (Numbers), etapa de la animacion en la iteracion.
-					--- (Keys), la clave de la animacion.
-						--- (Styles), los estilos de la animacion.. */
-				if(empty(valueTransform) !== "" || (valueNormal.length > 0)){
+		const typeAnimation:string = this.resources.type;
 
-					Object.defineProperty(parts, keys[i], {
-						value: (`
-							${numbers[i]}{
-								${empty(valueTransform)}
-								${valueNormal.join(' ')}
-							}
-						`),
-						writable: true
-					});
-				}
-			}
-		// Comprueba si el usuario utilizo una animacion (9/9).
-		}else if(this.#resources.type === "nine"){
-			// Itera nueve veces.
-			for(let i in keysNine){
-				// Extrae las propiedades, (normales) y (transformaciones).
-				let valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsNineTransform, keysNine[i]);
-				let valueNormal = Object.getOwnPropertyDescriptor(this.#resources.partsNine, keysNine[i]);
-				valueTransform = valueTransform.value;
-				valueNormal = valueNormal.value;
+		// Extrae la cantidad de veces a iterar segun el tipo de animacion.
+		const iterarion:number = (
+			typeAnimation === "default" ? partsFive.length : (
+				typeAnimation === "nine" ? partsNine.length : partsThree.length
+			)
+		);
 
-				// Hce el mismo proceso de arriba.
-				if(empty(valueTransform) !== "" || (valueNormal.length > 0)){
-					Object.defineProperty(parts, keysNine[i], {
-						value: (`
-							${numbersNine[i]}{
-								${empty(valueTransform)}
-								${valueNormal.join(' ')}
-							}
-						`),
-						writable: true
-					});
-				}
-			}
-		}else{
+		for(let i = 0; i <= iterarion; i++){
+			let part:string, percentage:string;
+
+			// Comprueba si el usuario utilizo una animacion (5/5).
+			if(typeAnimation === "default"){
+				part = partsFive[i], 
+				percentage = percentageFive[i];
+			// Comprueba si el usuario utilizo una animacion (9/9).
+			}else if(typeAnimation === "nine"){
+				part = partsNine[i], 
+				percentage = percentageNine[i];
 			// Si no fue (5/5 == normal), ni (9/9), entonces es (3/3), el proceso se repite.
-			for(let i in keysThree){
-				
-				let valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsThreeTransform, keysThree[i]);
-				let valueNormal = Object.getOwnPropertyDescriptor(this.#resources.partsThree, keysThree[i]);
-				valueTransform = valueTransform.value;
-				valueNormal = valueNormal.value;
+			}else{
+				part = partsThree[i], 
+				percentage = percentageThree[i];
+			}
 
-				if(empty(valueTransform) !== "" || (valueNormal.length > 0)){
-					Object.defineProperty(parts, keysThree[i], {
-						value: (`
-							${numbersThree[i]}{
-								${empty(valueTransform)}
-								${valueNormal.join(' ')}
+			// Extrae las propiedades, (normales) y (transformaciones).
+			let valueTransform:string[] = Object.getOwnPropertyDescriptor(this.resources.partsTransform, part)?.value
+			let valueNormal:string[] = Object.getOwnPropertyDescriptor(this.resources.parts, part)?.value;
+
+			// Verificamos que los (value) de las (part) de (resources) no se encuentren vacios.
+			/**
+			 * Las transformaciones solo requiren un (key), y tienen muchos (values).
+			 * 		--- transform: translateY(-50rem) scale(1) skew(9deg) rotate(180deg);
+			 * 
+			 * Pero las propiedades normales solo son un (key) y un (value).
+			 * 		--- opacity: 1; color: #000; font-size: 1.6rem;
+			 */
+			if(valueTransform.length > 0 || (valueNormal.length > 0)){
+				// Agregregar parte de animacion. (%).
+				Object.defineProperty(ANIMATION_PARTS, part, {
+					value: (`
+						${percentage}{
+							${
+								valueTransform.length > 0 ? (`
+									transform: ${valueTransform.join(' ')};
+								`) : ``
 							}
-						`),
-						writable: true
-					});
-				}
+							${
+								valueNormal.length > 0 ? (`
+									${valueNormal.join(' ')}
+								`) : ""
+							}
+						}
+					`),
+					writable: true
+				});
 			}
 		}
 
-		this.#validate();
+		this.#validateAnimationSettings();
 
-		// Obtenemos un arreglo con todas las etapas de la animacion, cada etapa con sus propiedades.
-		const getParts = () => {
-			// Aqui almacera las animaciones por separado, cada animacion tiene este formato: 
-			/**
-			 * 	{
-			 * 		value: "50%{ animaciones }"
-			 * 	}
-			 * 
-			 * Donde (50%) varia segun el tipo de animacion 5/5, 9/9 o 3/3.
-			 */
-			let array = new Array();
-
-			// 5/5.
-			if(this.#resources.type === "default"){
-				array = keys.map(key => {
-					let obj = isUndefined(Object.getOwnPropertyDescriptor(parts, key));
-					if(obj.value) return obj.value;
-				});
-			// 9/9.
-			}else if(this.#resources.type === "nine"){
-				array = keysNine.map(key => {
-					let obj = isUndefined(Object.getOwnPropertyDescriptor(parts, key));
-					if(obj.value) return obj.value;
-				});
-			// 3/3.
-			}else if(this.#resources.type === "three"){
-				array = keysThree.map(key => {
-					let obj = isUndefined(Object.getOwnPropertyDescriptor(parts, key));
-					if(obj.value) return obj.value;
-				});
-			}
-
-			return (array.join(""));
+		// Los porcentajes con las propiedades guardados en las keys (parts) de (ANIMATION_PARTS), luego se convierten a string.
+		const getPercentages = () => {
+			// @ts-ignore
+			const partsValues:string[] = Object.values(ANIMATION_PARTS);
+			return partsValues.join("");
 		};
 
 		// En la hoja de estilos que inyectamos, ahora agregamos las configuraciones de nuestra animacion.
@@ -1035,38 +989,34 @@ class CosmicAnimation{
 				animation-fill-mode: ${this.animation.fillMode};
 			}
 			@keyframes ${this.animation.name}{
-				${getParts()}
+				${getPercentages()}
 			}/* end: ${this.animation.name} */
 		`);
+
 		// Agregamos la hoja de estilos al DOM.
 		document.getElementsByTagName('body')[0].appendChild(style);
 		
 		/**
 		 * ¿Como? ¿Quieres utilizar ObserverViewport?
-		 * 
 		 * Revisa que lo hayas configurado.
 		 */
 
 		// Revisa que este habilitado.
 		if(this.observeViewport.enabled){
 			// Lo aplica.
-			const intersectingObserver = () => {
-				const observeTarget = new IntersectionObserver(elements => {
-					// Cuando el objeto es intersectado.
-					if(elements[0].isIntersecting){
-						// Aplica la animacion.
-						this.target.classList.add(this.animation.name);
-					}else{
-						// Si configuraste (infinite), entonces la animacion se repite cada que el elemento abandona y entra de nuevo al viewport.
-						if(this.observeViewport.infinite) this.target.classList.remove(this.animation.name);
-					}
-				});
+			const observeTarget = new IntersectionObserver(elements => {
+				// Cuando el objeto es intersectado, aplica la animacion.
+				if(elements[0].isIntersecting){
+					this.target.classList.add(this.animation.name);
+				// Si configuraste (infinite), entonces la animacion se repite cada que el elemento abandona y entra de nuevo al viewport.
+				}else if(this.observeViewport.infinite){
+					this.target.classList.remove(this.animation.name);
+				}
+			});
 
+			if(this.target.parentElement){
 				observeTarget.observe(this.target.parentElement);
-			};
-
-			// Ejecutamos.
-			intersectingObserver();
+			}
 		}else{
 			// Sino, solo aplica la animacion y ya.
 			this.target.classList.add(this.animation.name);
