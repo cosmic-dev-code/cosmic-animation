@@ -57,7 +57,15 @@ interface CosmicAnimateValidations{
     empty(data:any):boolean;
 }
 
+interface CosmicFadeOutSettings{
+    mode?:string;
+    spaceInLetters:number;
+    time:number;
+    random?:boolean;
+}
+
 export {
+    CosmicFadeOutSettings, 
     CosmicAnimateSettings, CosmicAnimateViewport, CosmicAnimateValidations, 
     CosmicAnimateResources, CosmicAnimatePart3, CosmicAnimatePart5, CosmicAnimatePart9
 }

@@ -1,5 +1,5 @@
 // Interfaces
-import { CosmicAnimateResources, CosmicAnimateSettings, CosmicAnimateValidations, CosmicAnimateViewport } from "./interfaces/animation";
+import { CosmicAnimateResources, CosmicAnimateSettings, CosmicAnimateValidations, CosmicAnimateViewport, CosmicFadeOutSettings } from "./interfaces/animation";
 
 /**
  * @class CosmicAnimation
@@ -83,7 +83,6 @@ class CosmicAnimation{
 	 * @return {CosmicAnimation|CosmicAnimation[]}
 	 */
 	constructor(selector?:string|string[], name?:string|string[]){
-
 		if(!name) name = this.createAutomaticName() as string;
 
 		if(this.validations.empty(selector)){
@@ -194,7 +193,7 @@ class CosmicAnimation{
 	 * @param {string|string[]|number} parts
 	 * @returns {void}
 	 */
-	#addResources(start:string, end:string, parts:string|string[]|number){
+	#addResources(start:string, end:string, parts:string|string[]|number, isTransform?:boolean){
 		/**
 		 * Si lo final es un numero, significa que hemos recibido: 
 		 * 		@example funcion(start, parts)
@@ -221,30 +220,54 @@ class CosmicAnimation{
 		
 			if(parts.includes("/9")){
 				this.resources.type = "nine";
-		
-				// @ts-ignore
-				if(Array.isArray(this.resources.partsNine[partName])){
+
+				if(isTransform){
 					// @ts-ignore
-					this.resources.partsNine[partName].push(start);
+					if(Array.isArray(this.resources.partsNineTransform[partName])){
+						// @ts-ignore
+						this.resources.partsNineTransform[partName].push(start);
+					}
+				}else{
+					// @ts-ignore
+					if(Array.isArray(this.resources.partsNine[partName])){
+						// @ts-ignore
+						this.resources.partsNine[partName].push(start);
+					}
 				}
 				return;
 			}else if(parts.includes("/3")){
 				this.resources.type = "three";
-		
-				// @ts-ignore
-				if(Array.isArray(this.resources.partsThree[partName])){
+
+				if(isTransform){
 					// @ts-ignore
-					this.resources.partsThree[partName].push(start);
+					if(Array.isArray(this.resources.partsThreeTransform[partName])){
+						// @ts-ignore
+						this.resources.partsThreeTransform[partName].push(start);
+					}
+				}else{
+					// @ts-ignore
+					if(Array.isArray(this.resources.partsThree[partName])){
+						// @ts-ignore
+						this.resources.partsThree[partName].push(start);
+					}
 				}
 				return;
 			}else if(parts.includes("/5")){
 				// Indicar que es por defecto.
 				this.resources.type = "default";
-		
-				// @ts-ignore
-				if(Array.isArray(this.resources.parts[partName])){
+
+				if(isTransform){
 					// @ts-ignore
-					this.resources.parts[partName].push(start);
+					if(Array.isArray(this.resources.partsTransform[partName])){
+						// @ts-ignore
+						this.resources.partsTransform[partName].push(start);
+					}
+				}else{
+					// @ts-ignore
+					if(Array.isArray(this.resources.parts[partName])){
+						// @ts-ignore
+						this.resources.parts[partName].push(start);
+					}
 				}
 				return;
 			}
@@ -265,7 +288,7 @@ class CosmicAnimation{
 					return;
 				}
 
-				this.#addResources(start, "", part);
+				this.#addResources(start, "", part, isTransform);
 			}
 		}
 	}
@@ -273,23 +296,47 @@ class CosmicAnimation{
 	// Transformaciones.
 	// Como puedes observar las propiedades de transformacion se almacenan en otro lugar.
 
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example scale(0.5, 1)
+	 * @example scale(0.5, '1/5')
+	 * @example scale(0.5, ['1/3', '2/3'])
+	 */
 	public scale(start:number = 1, end:string|string[]|number = 1):CosmicAnimation{
-		this.#addResources(end, `scale(${start})`, `scale(${end})`);
+		this.#addResources(`scale(${start})`, `scale(${end})`, end, true);
 		return this;
 	}
 
-	public translateY(start = 0, end = 0){
-		this.#addResources(end, ('translateY('+start+'px)'), ('translateY('+end+'px)'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example translateY(0.5, 1)
+	 * @example translateY(0.5, '1/5')
+	 * @example translateY(0.5, ['1/3', '2/3'])
+	 */
+	public translateY(start:number = 0, end:string|string[]|number = 0):CosmicAnimation{
+		this.#addResources(('translateY('+start+'px)'), ('translateY('+end+'px)'), end, true);
 		return this;
 	}
 
-	translateX(start = 0, end = 0){
-		this.#addResources(end, ('translateX('+start+'px)'), ('translateX('+end+'px)'));
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example translateX(0.5, 1)
+	 * @example translateX(0.5, '1/5')
+	 * @example translateX(0.5, ['1/3', '2/3'])
+	 */
+	public translateX(start:number = 0, end:string|string[]|number = 0):CosmicAnimation{
+		this.#addResources(('translateX('+start+'px)'), ('translateX('+end+'px)'), end, true);
 		return this;
 	}
-
-	rotate(start = 0, end = 0){
-		this.#addResources(end, ('rotate('+start+'deg)'), ('rotate('+end+'deg)'));
+	
+	/**
+	 * @author Brandon Anthony Olivares Amador
+	 * @example rotate(0.5, 1)
+	 * @example rotate(0.5, '1/5')
+	 * @example rotate(0.5, ['1/3', '2/3'])
+	 */
+	public rotate(start:number = 0, end:string|string[]|number = 0):CosmicAnimation{
+		this.#addResources(('rotate('+start+'deg)'), ('rotate('+end+'deg)'), end, true);
 		return this;
 	}
 
@@ -299,7 +346,7 @@ class CosmicAnimation{
 	 * @example opacity(0.5, '1/5')
 	 * @example opacity(0.5, ['1/3', '2/3'])
 	 */
-	opacity(start:number = 0, end:string|string[]|number = 1):CosmicAnimation{
+	public opacity(start:number = 0, end:string|string[]|number = 1):CosmicAnimation{
 		this.#addResources(('opacity: '+start+';'), ('opacity: '+end+';'), end);
 		return this;
 	}
@@ -310,7 +357,7 @@ class CosmicAnimation{
 	 * @example bgColor("blue", '1/5')
 	 * @example bgColor("blue", ['1/3', '2/3'])
 	 */
-	bgColor(start:string = "red", end:string = "red"):CosmicAnimation{
+	public bgColor(start:string = "red", end:string = "red"):CosmicAnimation{
 		this.#addResources(('background-color: '+start+';'), ('background-color: '+end+';'), end);
 		return this;
 	}
@@ -321,7 +368,7 @@ class CosmicAnimation{
 	 * @example color("blue", '1/5')
 	 * @example color("blue", ['1/3', '2/3'])
 	 */
-	color(start:string = "black", end:string = "black"):CosmicAnimation{
+	public color(start:string = "black", end:string = "black"):CosmicAnimation{
 		this.#addResources(('color: '+start+';'), ('color: '+end+';'), end);
 		return this;
 	}
@@ -332,7 +379,7 @@ class CosmicAnimation{
 	 * @example width(300, '1/5')
 	 * @example width(300, ['1/3', '2/3'])
 	 */
-	width(start:number = 300, end:number = 300):CosmicAnimation{
+	public width(start:number = 300, end:number = 300):CosmicAnimation{
 		this.#addResources(('width: '+start+'px;'), ('width: '+end+'px;'), end);
 		return this;
 	}
@@ -343,7 +390,7 @@ class CosmicAnimation{
 	 * @example height(300, '1/5')
 	 * @example height(300, ['1/3', '2/3'])
 	 */
-	height(start:number = 300, end:number = 300):CosmicAnimation{
+	public height(start:number = 300, end:number = 300):CosmicAnimation{
 		this.#addResources(('height: '+start+'px;'), ('height: '+end+'px;'), end);
 		return this;
 	}
@@ -354,7 +401,7 @@ class CosmicAnimation{
 	 * @example padding(10, '1/5')
 	 * @example padding(10, ['1/3', '2/3'])
 	 */
-	padding(start:number = 300, end:number = 300):CosmicAnimation{
+	public padding(start:number = 300, end:number = 300):CosmicAnimation{
 		this.#addResources(('padding: '+start+'px;'), ('padding: '+end+'px;'), end);
 		return this;
 	}
@@ -365,7 +412,7 @@ class CosmicAnimation{
 	 * @example margin(10, '1/5')
 	 * @example margin(10, ['1/3', '2/3'])
 	 */
-	margin(start:number = 300, end:number = 300):CosmicAnimation{
+	public margin(start:number = 300, end:number = 300):CosmicAnimation{
 		this.#addResources(('margin: '+start+'px;'), ('margin: '+end+'px;'), end);
 		return this;
 	}
@@ -376,46 +423,107 @@ class CosmicAnimation{
 	 * @example addProperty("border: 2px solid #000;", '1/5')
 	 * @example addProperty("border: 2px solid #000;", ["2/5", "3/5", "4/5"])
 	 */
-	addProperty(cssStart:string = "", cssEnd:string = ""):CosmicAnimation{
+	public addProperty(cssStart:string = "", cssEnd:string = ""):CosmicAnimation{
 		this.#addResources(cssStart, cssEnd, cssEnd);
 		return this;
 	}
 
-	// Metodo interno utilizado solo para la animacion letra por letra, debe complementarse, por eso es privado.
-	#lettersToElements = function(spaceInLetters){
-		let letters = this.target.textContent.split("");
+	/**
+	 * Metodo interno utilizado solo para la animacion letra por letra, debe complementarse, por eso es privado.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {number} spaceInLetters
+	 * @private
+	 */
+	#lettersToElements(spaceInLetters:number):void{
+		if(this.target.textContent){
 
-		this.target.innerHTML = ("");
+			// Obtenermos el texto del elemento, convertido en array.
+			let letters:string[] = this.target.textContent.split("");
 
-		letters.forEach(letter => {
-			if(letter === " " || letter === "\n" || letter === "\t"){
-				this.target.innerHTML += (`
-					<span style="display: inline-block; margin: 0 ${spaceInLetters}px;"></span>
-				`).trim();
-			}else{
-				this.target.innerHTML += (`
-					<span style="display: inline-block;">${letter}</span>
-				`).trim();
-			}
-		});
+			// Limpiar HTML y texto del elemento.
+			this.target.innerHTML = "";
+
+			// Iterar letra por letra.
+			letters.forEach((letter:string) => {
+				// Los espacios son reemplazados por un margen (X) con el valor (spaceInLetters).
+				// Las demas letras son inyectadas en otro <span>, esto se hace para poder animar cada <span>
+				if(letter === " " || letter === "\n" || letter === "\t"){
+					this.target.innerHTML += (`
+						<span style="display: inline-block; margin: 0 ${spaceInLetters}px;"></span>
+					`).trim();
+				}else{
+					this.target.innerHTML += (`
+						<span style="display: inline-block;">${letter}</span>
+					`).trim();
+				}
+			});
+		}
 	};
 
 	/**
-	 * Metodos con animaciones establecidas por defecto.
-	 * 
+	 * Desaperece el texto del elemento letra por letra, puede recibir una direccion especifica 
+	 * o solo desaparecer.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {CosmicFadeOutSettings} param0
+	 * @private
+	 */
+	#fadeOut({ mode, spaceInLetters, time, random }:CosmicFadeOutSettings):void{
+		// Transformar contenido del elemento en <span> con cada letra para animar cada letra de manera individual.
+		this.#lettersToElements(spaceInLetters);
+
+		let index = 0, 
+			// Obtener los <span> inyectados.
+			childs:HTMLCollection = this.target.children, 
+			// Almacena los "ids" automaticas para cada <span>
+			ids:number[] = new Array(), 
+			// Utilizado para asignar un (mode) automatico, (si es random)
+			randomModes:string[] = new Array("top", "right", "bottom", "left", "center");
+
+		const createAutomaticRandIds:Function = ():void => {
+			const randomId:number = Math.round(Math.random()*1000);
+
+			if(ids.indexOf(randomId) === -1) ids.push(randomId);
+			else createAutomaticRandIds();
+		};
+
+		for(let i = 0; i < childs.length; i++) createAutomaticRandIds();
+
+		// Iterar <span> inyectados.
+		setInterval(() => {
+			const span = childs[index] as HTMLSpanElement, 
+				  randomId:string = `id${ids[index]}`;
+
+			span.setAttribute("id", randomId);
+
+			// Si no hay direccion, sino que es cada una a lo random.
+			if(random){
+				let randomMode:string = randomModes[
+					Math.floor(Math.random()*randomModes.length)
+				];
+
+				new CosmicAnimation("#" + randomId).fadeOutTo(randomMode).execute();
+			// Si hay una direccion, desaparece hacia una direccion.
+			}else if(mode) new CosmicAnimation("#" + randomId).fadeOutTo(mode).execute();
+			// Sino, solo desaparece.
+			else new CosmicAnimation("#" + randomId).fadeOut().execute();
+
+			index++;
+		}, time);
+	}
+
+	/**
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {string} mode 
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	fromWindowShowTo(mode = "right", duration = 2000, delay = 0){
+	public fromWindowShowTo(mode:string = "right", duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in-out';
-		this.opacity(0, 1);
-		this.opacity(0.3, '2/5');
-		this.opacity(0.5, '3/5');
-		this.opacity(0.7, '4/5');
+		this.opacity(0, 1).opacity(0.3, '2/5').opacity(0.5, '3/5').opacity(0.7, '4/5');
+
 		if(mode === "top"){
 			this.translateY(window.innerWidth, 0); // + y 0
 		}else if(mode === "right"){
@@ -429,150 +537,57 @@ class CosmicAnimation{
 	}
 
 	/**
-	 * 
+	 * Desaperece el texto del elemento letra por letra.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {number} spaceInLetters 
+	 * @param {number} time 
+	 * @returns {CosmicAnimation}
+	 */
+	public fadeOutLetters(spaceInLetters:number = 6, time:number = 100):void{
+		this.#fadeOut({
+			spaceInLetters, 
+			time
+		});
+	}
+
+	/**
+	 * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {string} mode 
 	 * @param {number} spaceInLetters 
 	 * @param {number} time 
 	 * @returns {CosmicAnimation}
 	 */
-	fadeOutLettersTo(mode = "top", spaceInLetters = 6, time = 100){
-		this.#lettersToElements(spaceInLetters);
-
-		let index = 0, 
-			childs = this.target.children, 
-			allId = new Array();
-
-		let interval = setInterval(() => {
-			if(childs[index] !== undefined){
-				let randomId = undefined;
-
-				while(true){
-					let exists = false;
-					randomId = Math.round(Math.random()*1000);
-
-					allId.forEach(id => {
-						if(id === randomId) exists = true;
-					});
-
-					if(!exists) break;
-				}
-
-				allId.push(randomId);
-
-				childs[index].setAttribute("id", ("id"+allId[allId.length - 1]));
-				let ani = new CosmicAnimation(`#id${allId[allId.length - 1]}`);
-
-				if(mode === "top") ani.fadeOutTo("top");
-				else if(mode === "right") ani.fadeOutTo("right");
-				else if(mode === "bottom") ani.fadeOutTo("bottom");
-				else ani.fadeOutTo("left");
-				ani.execute();
-				index++;
-			}else{
-				clearInterval(interval);
-			}
-		}, time);
-		return this;
+	public fadeOutLettersTo(mode:string = "top", spaceInLetters:number = 6, time:number = 100):void{
+		this.#fadeOut({
+			mode, 
+			spaceInLetters, 
+			time
+		});
 	}
 
 	/**
-	 * 
+	 * Desaperece el texto del elemento letra por letra hacia una direccion random.
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} spaceInLetters 
 	 * @param {number} time 
 	 * @returns {CosmicAnimation}
 	 */
-	fadeOutLetters(spaceInLetters = 6, time = 100){
-		this.#lettersToElements(spaceInLetters);
-
-		let index = 0, 
-			childs = this.target.children, 
-			allId = new Array();
-
-		let interval = setInterval(() => {
-			if(childs[index] !== undefined){
-				let randomId = undefined;
-
-				while(true){
-					let exists = false;
-					randomId = Math.round(Math.random()*1000);
-
-					allId.forEach(id => {
-						if(id === randomId) exists = true;
-					});
-
-					if(!exists) break;
-				}
-
-				allId.push(randomId);
-
-				childs[index].setAttribute("id", ("id"+allId[allId.length - 1]));
-				let ani = new CosmicAnimation(`#id${allId[allId.length - 1]}`);
-				ani.fadeOut();
-				ani.execute();
-				index++;
-			}else{
-				clearInterval(interval);
-			}
-		}, time);
-		return this;
+	public fadeOutLettersRandom(spaceInLetters:number = 6, time:number = 100):void{
+		this.#fadeOut({
+			spaceInLetters, 
+			time, 
+			random: true
+		});
 	}
 
 	/**
-	 * 
-	 * @param {number} spaceInLetters 
-	 * @param {number} time 
-	 * @returns {CosmicAnimation}
-	 */
-	fadeOutLettersRandom(spaceInLetters = 6, time = 100){
-		this.#lettersToElements(spaceInLetters);
-
-		let index = 0, 
-			childs = this.target.children, 
-			allId = new Array(), 
-			modes = new Array("top", "right", "bottom", "left", "center");
-
-		let interval = setInterval(() => {
-			if(childs[index] !== undefined){
-				let randomId = undefined, 
-					mode = modes[Math.floor(Math.random()*modes.length)];
-
-				while(true){
-					let exists = false;
-					randomId = Math.round(Math.random()*1000);
-
-					allId.forEach(id => {
-						if(id === randomId) exists = true;
-					});
-
-					if(!exists) break;
-				}
-
-				allId.push(randomId);
-
-				childs[index].setAttribute("id", ("id"+allId[allId.length - 1]));
-				let ani = new CosmicAnimation(`#id${allId[allId.length - 1]}`);
-
-				if(mode === "top") ani.fadeOutTo("top");
-				else if(mode === "right") ani.fadeOutTo("right");
-				else if(mode === "bottom") ani.fadeOutTo("bottom");
-				else if(mode === "left") ani.fadeOutTo("left");
-				else ani.fadeOut();
-				ani.execute();
-				index++;
-			}else{
-				clearInterval(interval);
-			}
-		}, time);
-		return this;
-	}
-
-	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	appear(duration = 1300, delay = 0){
+	public appear(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-out';
@@ -581,21 +596,20 @@ class CosmicAnimation{
 	}
 
 	/**
-	 * 
-	 * @param {string} mode - Esta es la direccion de la animcion.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {string} mode
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	appearTo(mode = 'bottom', duration = 1300, delay = 0){
+	public appearTo(mode = 'bottom', duration = 1300, delay = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in-out';
-		this.opacity(0, '1/5');
-		this.opacity(0.1, '2/5');
-		this.opacity(0.2, '3/5');
-		this.opacity(0.3, '4/5');
-		this.opacity(1, '5/5');
+		this.opacity(0, '1/5').opacity(0.1, '2/5').opacity(0.2, '3/5')
+			.opacity(0.3, '4/5').opacity(1, '5/5');
+		
+		// De acuerdo a la direccion, se crea la animacion.
 		if(mode === 'top') this.translateY(300, 0);
 		else if(mode === 'bottom') this.translateY(-300, 0);
 		else if(mode === 'right') this.translateX(-300, 0);
@@ -605,12 +619,12 @@ class CosmicAnimation{
 	}
 
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	fadeOut(duration = 1300, delay = 0){
+	public fadeOut(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-out';
@@ -629,11 +643,10 @@ class CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in';
-		this.opacity(1, '1/5');
-		this.opacity(0.3, '2/5');
-		this.opacity(0.2, '3/5');
-		this.opacity(0.1, '4/5');
-		this.opacity(0, '5/5');
+		this.opacity(1, '1/5').opacity(0.3, '2/5').opacity(0.2, '3/5')
+			.opacity(0.1, '4/5').opacity(0, '5/5');
+
+		// De acuerdo a la direccion, se crea la animacion.
 		if(mode === 'top') this.translateY(0, -300);
 		else if(mode === 'bottom') this.translateY(0, 300);
 		else if(mode === 'right') this.translateX(0, 300);
