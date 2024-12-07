@@ -768,6 +768,7 @@ class CosmicAnimation{
 	 * 
 	 * Puedes limpiar todas las animaciones con este metodo.
 	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @returns {CosmicAnimation}
 	 */
 	public deleteAnimation():CosmicAnimation{
@@ -788,7 +789,7 @@ class CosmicAnimation{
 				(style.innerHTML.indexOf(comment) + comment.length), 
 				style.innerHTML.length
 			);
-			
+
 			// Lo de en medio se fue, hasta INICIO, desde FINAL.
 			style.innerHTML = (partOne + partTwo);
 		}
@@ -801,8 +802,11 @@ class CosmicAnimation{
 
 	/**
 	 * Este metodo ejecuta acciones al finalizar la animacion.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {Function} callback
+	 * @param {Function} callbackErr
 	 */
-	public terminate(callback:Function, callbackErr?:Function){
+	public terminate(callback:Function, callbackErr?:Function):void{
 		try{
 			// Suma el tiempo de duracion y retraso.
 			let time = (this.animation.delay + this.animation.duration);
@@ -829,6 +833,8 @@ class CosmicAnimation{
 
 	/**
 	 * Este metodo ejecuta acciones al finalizar la animacion de manera asincrona.
+	 * @author Brandon Anthony Olivares Amador
+	 * @returns {Promise<boolean|any>}
 	 */
 	public asyncTerminate():Promise<boolean|any>{
 		return new Promise((resolve, reject) => {
@@ -839,8 +845,11 @@ class CosmicAnimation{
 		});
 	}
 
-	// Algunas validaciones.
-	#validate(){
+	/**
+	 * Validaciones para los ajustes de la animacion.
+	 * @author Brandon Anthony Olivares Amador
+	 */
+	#validate():void{
 		// Las iteraciones deben ser un (numero entero), (pero puede ser Infinity)
 		if(!Number.isInteger(this.animation.iterationCount)){
 			this.animation.iterationCount = 1;
@@ -855,8 +864,6 @@ class CosmicAnimation{
 		if(!Number.isFinite(this.animation.delay) || !Number.isInteger(this.animation.delay)){
 			this.animation.delay = 0;
 		}
-
-		return true;
 	}
 
 	// Ejecuta las animaciones.
