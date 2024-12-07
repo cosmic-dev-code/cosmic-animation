@@ -212,8 +212,13 @@ class CosmicAnimation{
 		 * propiedades declaradas a guardar en el arreglo por defecto.
 		 */
 		if(typeof parts === "number"){
-			this.resources.parts.part1.push(start);
-			this.resources.parts.part5.push(end);
+			if(isTransform){
+				this.resources.partsTransform.part1.push(start);
+				this.resources.partsTransform.part5.push(end);
+			}else{
+				this.resources.parts.part1.push(start);
+				this.resources.parts.part5.push(end);
+			}
 			return;
 		}
 
@@ -267,12 +272,14 @@ class CosmicAnimation{
 				this.resources.type = "default";
 
 				if(isTransform){
+					console.log("part T => ", start, end, parts)
 					// @ts-ignore
 					if(Array.isArray(this.resources.partsTransform[partName])){
 						// @ts-ignore
 						this.resources.partsTransform[partName].push(start);
 					}
 				}else{
+					console.log("part => ", start, end, parts)
 					// @ts-ignore
 					if(Array.isArray(this.resources.parts[partName])){
 						// @ts-ignore
@@ -913,7 +920,7 @@ class CosmicAnimation{
 			typeAnimation === "default" ? partsFive.length : (
 				typeAnimation === "nine" ? partsNine.length : partsThree.length
 			)
-		);
+		) - 1;
 
 		for(let i = 0; i <= iterarion; i++){
 			let part:string, percentage:string;
@@ -933,8 +940,18 @@ class CosmicAnimation{
 			}
 
 			// Extrae las propiedades, (normales) y (transformaciones).
-			let valueTransform:string[] = Object.getOwnPropertyDescriptor(this.resources.partsTransform, part)?.value
-			let valueNormal:string[] = Object.getOwnPropertyDescriptor(this.resources.parts, part)?.value;
+			let valueTransform:string[], valueNormal:string[];
+
+			if(typeAnimation === "default"){
+				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.resources.parts, part)?.value;
+			}else if(typeAnimation === "nine"){
+				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsNineTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.resources.partsNine, part)?.value;
+			}else{
+				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsThreeTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.resources.partsThree, part)?.value;
+			}
 
 			// Verificamos que los (value) de las (part) de (resources) no se encuentren vacios.
 			/**
@@ -956,12 +973,13 @@ class CosmicAnimation{
 							}
 							${
 								valueNormal.length > 0 ? (`
-									${valueNormal.join(' ')}
+									${valueNormal.join('')}
 								`) : ""
 							}
 						}
 					`),
-					writable: true
+					writable: true, 
+					enumerable: true
 				});
 			}
 		}
@@ -972,8 +990,14 @@ class CosmicAnimation{
 		const getPercentages = () => {
 			// @ts-ignore
 			const partsValues:string[] = Object.values(ANIMATION_PARTS);
+
+			// @ts-ignore
+			window.ANIMATION_PARTS = ANIMATION_PARTS;
+
 			return partsValues.join("");
 		};
+
+		console.log("ANIMATION_PARTS => ", ANIMATION_PARTS)
 
 		// En la hoja de estilos que inyectamos, ahora agregamos las configuraciones de nuestra animacion.
 		style.innerHTML += (`
@@ -1023,3 +1047,6 @@ class CosmicAnimation{
 		}
 	}
 }
+
+// @ts-ignore
+window.CosmicAnimation = CosmicAnimation;

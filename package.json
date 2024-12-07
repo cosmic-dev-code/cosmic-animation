@@ -2,17 +2,27 @@
   "name": "cosmic-animation",
   "version": "1.0.0",
   "description": "A library for creating fast and robust CSS animations with JavaScript. Minimalistic and effective.",
-  "keywords": ["animation", "animations", "cosmic", "astro", "fantastic", "javascript", "js", "css", "minimalist"],
+  "keywords": [
+    "animation",
+    "animations",
+    "cosmic",
+    "astro",
+    "fantastic",
+    "javascript",
+    "js",
+    "css",
+    "minimalist"
+  ],
   "author": {
-    "name": "Brandon Anthony", 
-    "email": "brandonolivares.developer@gmail.com", 
+    "name": "Brandon Anthony",
+    "email": "brandonolivares.developer@gmail.com",
     "url": "https://webdev.brandondeveloper.com/"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/cosmic-dev-code/cosmic-animation"
   },
-  "homepage": "https://github.com/cosmic-dev-code/cosmic-animation#readme", 
+  "homepage": "https://github.com/cosmic-dev-code/cosmic-animation#readme",
   "main": "./dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -23,14 +33,17 @@
   },
   "compilerOptions": {
     "target": "ES6",
-    "module": "ESNext", 
-    "outDir": "./dist", 
-    "rootDir": "./src", 
+    "module": "ESNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true
-  }, 
+  },
   "include": [
     "./src/**/*.ts"
-  ]
+  ],
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
 }
