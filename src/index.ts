@@ -8,39 +8,47 @@ class CosmicAnimation{
 	// Por defecto crea un elemento DIV.
 	public target:HTMLElement = document.createElement('div');
 
+	private assignDefaultValues():void{
+		// @ts-ignore
+		this.target.classList = "";
+		this.animation.name = ("cosmic-animation-"+Math.round(Math.random()*300));
+		this.resources = {
+			type: 'default',
+			// 3/3
+			partsThree: {
+				part1: [], part2: [], part3: []
+			},
+			partsThreeTransform: {
+				part1: [], part2: [], part3: []
+			}, 
+			// 5/5
+			parts: {
+				part1: [], part2: [],
+				part3: [], part4: [],
+				part5: []
+			},
+			partsTransform: {
+				part1: [], part2: [],
+				part3: [], part4: [],
+				part5: []
+			},
+			// 9/9
+			partsNine: {
+				part1: [], part2: [], part3: [], part4: [],
+				part5: [], part6: [], part7: [], part8: [], 
+				part9: []
+			},
+			partsNineTransform: {
+				part1: [], part2: [], part3: [], part4: [],
+				part5: [], part6: [], part7: [], part8: [], 
+				part9: []
+			}
+		};
+	}
+
 	// Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
-	private resources:CosmicAnimateResources = {
-		type: 'default',
-		// Tres partes. 3/3
-		partsThree: {
-			part1: [], part2: [], part3: []
-		},
-		partsThreeTransform: {
-			part1: [], part2: [], part3: []
-		}, 
-		// Cinco partes. 5/5
-		parts: {
-			part1: [], part2: [],
-			part3: [], part4: [],
-			part5: []
-		},
-		partsTransform: {
-			part1: [], part2: [],
-			part3: [], part4: [],
-			part5: []
-		},
-		// Nueve partes. 9/9
-		partsNine: {
-			part1: [], part2: [], part3: [], part4: [],
-			part5: [], part6: [], part7: [], part8: [], 
-			part9: []
-		},
-		partsNineTransform: {
-			part1: [], part2: [], part3: [], part4: [],
-			part5: [], part6: [], part7: [], part8: [], 
-			part9: []
-		}
-	};
+	// @ts-ignore
+	private resources:CosmicAnimateResources = {};
 
 	private validations:CosmicAnimateValidations = {
 		numeric: /^[0-9]$/, 
@@ -83,6 +91,8 @@ class CosmicAnimation{
 	 * @return {CosmicAnimation|CosmicAnimation[]}
 	 */
 	constructor(selector?:string|string[], name?:string|string[]){
+		this.assignDefaultValues();
+
 		if(!name) name = this.createAutomaticName() as string;
 
 		if(this.validations.empty(selector)){
@@ -597,12 +607,12 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} mode
+	 * @param {string} direction
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	public appearTo(mode = 'bottom', duration = 1300, delay = 0):CosmicAnimation{
+	public appearTo(direction = 'bottom', duration = 1300, delay = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in-out';
@@ -610,10 +620,10 @@ class CosmicAnimation{
 			.opacity(0.3, '4/5').opacity(1, '5/5');
 		
 		// De acuerdo a la direccion, se crea la animacion.
-		if(mode === 'top') this.translateY(300, 0);
-		else if(mode === 'bottom') this.translateY(-300, 0);
-		else if(mode === 'right') this.translateX(-300, 0);
-		else if(mode === 'left') this.translateX(300, 0);
+		if(direction === 'top') this.translateY(300, 0);
+		else if(direction === 'bottom') this.translateY(-300, 0);
+		else if(direction === 'right') this.translateX(-300, 0);
+		else if(direction === 'left') this.translateX(300, 0);
 		else this.translateY(300, 0);
 		return this;
 	}
@@ -633,13 +643,13 @@ class CosmicAnimation{
 	}
 
 	/**
-	 * 
-	 * @param {string} mode - Esta es la direccion de la animacion.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {string} direction
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	fadeOutTo(mode = 'bottom', duration = 1300, delay = 0){
+	public fadeOutTo(direction:string = 'bottom', duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-in';
@@ -647,122 +657,109 @@ class CosmicAnimation{
 			.opacity(0.1, '4/5').opacity(0, '5/5');
 
 		// De acuerdo a la direccion, se crea la animacion.
-		if(mode === 'top') this.translateY(0, -300);
-		else if(mode === 'bottom') this.translateY(0, 300);
-		else if(mode === 'right') this.translateX(0, 300);
-		else if(mode === 'left') this.translateX(0, -300);
+		if(direction === 'top') this.translateY(0, -300);
+		else if(direction === 'bottom') this.translateY(0, 300);
+		else if(direction === 'right') this.translateX(0, 300);
+		else if(direction === 'left') this.translateX(0, -300);
 		else this.translateY(0, -300);
 		return this;
 	}
 
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	appearAndFadeOut(duration = 1300, delay = 0){
+	public appearAndFadeOut(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-out';
-		this.translateY("120", "1/5");
-		this.translateY("0", ["2/5", "3/5", "4/5"]);
-		this.translateY("120", "5/5");
-		this.opacity(0, "1/5");
-		this.opacity(1, ["2/5", "3/5", "4/5"]);
-		this.opacity(0, "5/5");
+		this.translateY(120, "1/5").translateY(0, ["2/5", "3/5", "4/5"]).translateY(120, "5/5")
+			.opacity(0, "1/5").opacity(1, ["2/5", "3/5", "4/5"]).opacity(0, "5/5");
 		return this;
 	}
 
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	increment(duration = 2000, delay = 0){
+	public increment(duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.animation.timingFunction = 'ease-out-in';
-		this.scale(0, 1);
-		this.opacity(0, 1);
+		this.scale(0, 1).opacity(0, 1);
 		return this;
 	}
 
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	incrementPulse(duration = 2000, delay = 0){
+	public incrementPulse(duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
-		this.scale(0, '1/5');
-		this.scale(1, ['2/5', '3/5']);
-		this.scale(1.2, '4/5');
-		this.scale(1, '5/5');
-		this.opacity(0, '1/5');
-		this.opacity(0.5, '2/5');
-		this.opacity(1, '3/5');
+		this.scale(0, '1/5').scale(1, ['2/5', '3/5']).scale(1.2, '4/5').scale(1, '5/5')
+			.opacity(0, '1/5').opacity(0.5, '2/5').opacity(1, '3/5');
 		return this;
 	}
 
 	/**
-	 * 
-	 * @param {string} mode - Esta es la direccion de la animacion.
+	 * @author Brandon Anthony Olivares Amador
+	 * @param {string} direction
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	circleTo(mode = 'bottom', duration = 2500, delay = 3000){
+	public circleTo(direction:string = 'bottom', duration:number = 2500, delay:number = 3000):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
 		this.target.style.visibility = "hidden";
 		this.addProperty('visibility: visible;', 'visibility: visible;');
-		if(mode === 'bottom'){
-			this.translateY(-window.innerHeight, '1/5');
-			this.translateY((-window.innerHeight / 2), '2/5');
-			this.translateY((-window.innerHeight / 3), '3/5');
+		if(direction === 'bottom'){
+			this.translateY(-window.innerHeight, '1/5')
+				.translateY((-window.innerHeight / 2), '2/5')
+				.translateY((-window.innerHeight / 3), '3/5');
 		}else{
-			this.translateY(window.innerHeight, '1/5');
-			this.translateY((window.innerHeight / 2), '2/5');
-			this.translateY((window.innerHeight / 3), '3/5');
+			this.translateY(window.innerHeight, '1/5')
+				.translateY((window.innerHeight / 2), '2/5')
+				.translateY((window.innerHeight / 3), '3/5');
 		}		
-		this.translateY(0, ['4/5', '5/5']);
-		this.opacity(0, 1);
-		this.addProperty('border-radius: 100%;', 'border-radius: 0;')
-		this.scale(0.1, ['1/5', '2/5', '3/5', '4/5']);
-		this.scale(1, '5/5');
+		this.translateY(0, ['4/5', '5/5'])
+			.opacity(0, 1)
+			.addProperty('border-radius: 100%;', 'border-radius: 0;')
+			.scale(0.1, ['1/5', '2/5', '3/5', '4/5']).scale(1, '5/5');
 		return this;
 	}
 	
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	pulse(duration = 1000, delay = 0){
+	public pulse(duration:number = 1000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
-		this.scale(1, 1);
-		this.scale(1.1, ['2/5', '4/5']);
-		this.scale(1.3, '3/5');
+		this.scale(1, 1).scale(1.1, ['2/5', '4/5']).scale(1.3, '3/5');
 		return this;
 	}
 
 	/**
-	 * 
+	 * @author Brandon Anthony Olivares Amador
 	 * @param {number} duration 
 	 * @param {number} delay 
 	 * @returns {CosmicAnimation}
 	 */
-	palpite(duration = 3000, delay = 0){
+	public palpite(duration:number = 3000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
 		this.animation.duration = duration;
-		this.scale(0.8, ['1/5', '3/5', '5/5']);
-		this.scale(1.1, ['2/5', '4/5']);
+		this.scale(0.8, ['1/5', '3/5', '5/5'])
+			.scale(1.1, ['2/5', '4/5']);
 		return this;
 	}
 
@@ -773,92 +770,91 @@ class CosmicAnimation{
 	 * 
 	 * @returns {CosmicAnimation}
 	 */
-	deleteAnimation(){
-		const style = document.getElementsByTagName('style')[0];
+	public deleteAnimation():CosmicAnimation{
+		const style:HTMLStyleElement = document.getElementsByTagName('style')[0];
 
 		// las animaciones de este elemento inyectadas dentro del primer archivo de estilos que habia.
-		if(style !== undefined && style !== null){
+		if(style){
+			const comment:string = `/* end: ${this.animation.name} */`, 
+				  animationName:string = `.${this.animation.name}`;
+
+			// Desde todo, hasta donde inicia el nombre de la animacion.
 			const partOne = style.innerHTML.slice(
-				0, style.innerHTML.indexOf("."+this.animation.name)
+				0, style.innerHTML.indexOf(animationName)
 			);
+
+			// Desde donde termina el comentario de esta animacion, hasta el final.
 			const partTwo = style.innerHTML.slice(
-				(style.innerHTML.indexOf(`/* end: ${this.animation.name} */`) + `/* end: ${this.animation.name} */`.length), 
+				(style.innerHTML.indexOf(comment) + comment.length), 
 				style.innerHTML.length
 			);
+			
+			// Lo de en medio se fue, hasta INICIO, desde FINAL.
 			style.innerHTML = (partOne + partTwo);
 		}
 
-		this.target.classList = "";
-		this.animation.name = ("cosmic-animation-"+Math.round(Math.random()*300));
-		this.#resources = new Object({
-			type: 'default',
-			// 3/3
-			partsThree: {
-				part1: [], part2: [], part3: []
-			},
-			partsThreeTransform: {
-				part1: [], part2: [], part3: []
-			}, 
-			// 5/5
-			parts: {
-				part1: [], part2: [],
-				part3: [], part4: [],
-				part5: []
-			},
-			partsTransform: {
-				part1: [], part2: [],
-				part3: [], part4: [],
-				part5: []
-			},
-			// 9/9
-			partsNine: {
-				part1: [], part2: [], part3: [], part4: [],
-				part5: [], part6: [], part7: [], part8: [], 
-				part9: []
-			},
-			partsNineTransform: {
-				part1: [], part2: [], part3: [], part4: [],
-				part5: [], part6: [], part7: [], part8: [], 
-				part9: []
-			}
-		});
+		// Restauramos ajustes por defecto.
+		this.assignDefaultValues();
+
 		return this;
 	}
 
 	/**
-	 * Este metodo calcula los (duration) y (delay) segun la configuracion de la (this.animation).
-	 * El callback se ejecuta al final de la animacion.
+	 * Este metodo ejecuta acciones al finalizar la animacion.
 	 */
-	terminate(callback = function(){}){
-		let time = (this.animation.delay + this.animation.duration);
+	public terminate(callback:Function, callbackErr?:Function){
+		try{
+			// Suma el tiempo de duracion y retraso.
+			let time = (this.animation.delay + this.animation.duration);
 
-		// Verifica que la animacion no sea infinita.
-		if(!Number.isFinite(this.animation.iterationCount)) this.animation.iterationCount = "infinite";
+			// Verifica que la animacion no sea infinita.
+			const isFinite:boolean = (
+				Number.isFinite(this.animation.iterationCount) && 
+				String(this.animation.iterationCount) !== "infinite"
+			);
 
-		// Suma las el tiempo segun el numero de iteraciones de la animacion.
-		if(Number.isInteger(this.animation.iterationCount)){
-			time = (time * this.animation.iterationCount);
-		}else{
-			if(Number(this.animation.iterationCount) !== NaN){
+			// Suma el tiempo segun la cantidad de iteraciones de la animacion.
+			if(Number.isInteger(this.animation.iterationCount) && isFinite){
 				time = (time * this.animation.iterationCount);
 			}
-		}
 
-		if(time !== "infinite" && time !== NaN && Number.isInteger(time)){
-			setTimeout(() => callback(), time);
+			// El callback se ejecuta al finalizar la animacion.
+			if(isFinite && typeof callback === "function"){
+				setTimeout(() => callback(), time);
+			}
+		}catch(error){
+			if(typeof callbackErr === "function") callbackErr(error);
 		}
+	}
+
+	/**
+	 * Este metodo ejecuta acciones al finalizar la animacion de manera asincrona.
+	 */
+	public asyncTerminate():Promise<boolean|any>{
+		return new Promise((resolve, reject) => {
+			this.terminate(
+				() => resolve(true), 
+				(error:any) => reject(error)
+			);
+		});
 	}
 
 	// Algunas validaciones.
 	#validate(){
-		if(!Number.isFinite(this.animation.iterationCount)) this.animation.iterationCount = 'infinite';
-		else if(!Number.isInteger(this.animation.iterationCount)) this.animation.iterationCount = 1;
+		// Las iteraciones deben ser un (numero entero), (pero puede ser Infinity)
+		if(!Number.isInteger(this.animation.iterationCount)){
+			this.animation.iterationCount = 1;
+		}
 
-		if(!Number.isFinite(this.animation.duration)) this.animation.duration = 1000;
-		else if(!Number.isInteger(this.animation.duration)) this.animation.duration = 1000;
+		// La duracion debe ser (finita) y debe ser un (numero entero).
+		if(!Number.isFinite(this.animation.duration) || !Number.isInteger(this.animation.duration)){
+			this.animation.duration = 1000;
+		}
 
-		if(!Number.isFinite(this.animation.delay)) this.animation.delay = 0;
-		else if(!Number.isInteger(this.animation.delay)) this.animation.iterationCount = 0;
+		// El delay debe ser (finita) y debe ser un (numero entero).
+		if(!Number.isFinite(this.animation.delay) || !Number.isInteger(this.animation.delay)){
+			this.animation.delay = 0;
+		}
 
 		return true;
 	}
@@ -1024,7 +1020,9 @@ class CosmicAnimation{
 				animation-name: ${this.animation.name};
 				animation-duration: ${this.animation.duration}ms;
 				animation-delay: ${this.animation.delay}ms;
-				animation-iteration-count: ${this.animation.iterationCount};
+				animation-iteration-count: ${
+					Number.isFinite(this.animation.iterationCount) ? this.animation.iterationCount : 'infinite'
+				};
 				animation-direction: ${this.animation.direction};
 				animation-timing-function: ${this.animation.timingFunction};
 				animation-fill-mode: ${this.animation.fillMode};
