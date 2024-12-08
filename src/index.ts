@@ -77,12 +77,6 @@ class CosmicAnimation{
 	 */
 	#originalContent:string = ``;
 
-	/**
-	 * Indica si el elemento ya tuvo una animacion asignada, (execute) o si todavia no la hay.
-	 * @private
-	 */
-	#animationExists:boolean = false;
-
 	// Ajustes comunes de una animacion CSS.
 	public animation:CosmicAnimateSettings = {
 		name: 'name',
@@ -100,7 +94,7 @@ class CosmicAnimation{
 		infinite: false // Indica si solo se ejecuta una vez o cada vez que entre y salga del viewport.
 	};
 
-	private createAutomaticName():string{
+	#createAutomaticName():string{
 		return ("cosmic-animation-"+Math.round(Math.random()*300));
 	}
 
@@ -114,7 +108,7 @@ class CosmicAnimation{
 	constructor(selector?:string|string[], name?:string|string[]){
 		this.#assignDefaultValues();
 
-		if(!name) name = this.createAutomaticName() as string;
+		if(!name) name = this.#createAutomaticName();
 
 		if(this.#validations.empty(selector)){
 			this.#error('The selector ('+selector+') is not valid.');
@@ -466,11 +460,11 @@ class CosmicAnimation{
 
 	/**
 	 * Metodo interno utilizado solo para la animacion letra por letra, debe complementarse, por eso es privado.
+	 * (appear) Inyecta opacity cuando el texto debe aparecer.
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} spaceInLetters
 	 * @private
 	 */
-	#lettersToElements(spaceInLetters:number):void{
+	#lettersToElements(spaceInLetters:number, appear:boolean = false):void{
 		// Respaldo.
 		this.#originalContent = this.target.innerHTML;
 
@@ -487,11 +481,18 @@ class CosmicAnimation{
 				// Las demas letras son inyectadas en otro <span>, esto se hace para poder animar cada <span>
 				if(letter === " " || letter === "\n" || letter === "\t"){
 					this.target.innerHTML += (`
-						<span style="display: inline-block; margin: 0 ${spaceInLetters}px;"></span>
+						<span style="
+							${ appear ? 'opacity: 0;' : '' }
+							display: inline-block;
+							margin: 0 ${spaceInLetters}px;
+						"></span>
 					`).trim();
 				}else{
 					this.target.innerHTML += (`
-						<span style="display: inline-block;">${letter}</span>
+						<span style="
+							${ appear ? 'opacity: 0;' : '' }
+							display: inline-block;
+						">${letter}</span>
 					`).trim();
 				}
 			});
@@ -499,15 +500,15 @@ class CosmicAnimation{
 	};
 
 	/**
-	 * Desaperece el texto del elemento letra por letra, puede recibir una direccion especifica 
-	 * o solo desaparecer.
+	 * Desaperece o Aparece el texto del elemento letra por letra, puede recibir una 
+	 * direccion especifica o solo desaparecer.
 	 * @author Brandon Anthony Olivares Amador
 	 * @param {CosmicFadeOutSettings} param0
 	 * @private
 	 */
-	#fadeOut({ mode, spaceInLetters, time, random }:CosmicFadeOutSettings):void{
+	#fadeOut({ mode, spaceInLetters, time, random, appear }:CosmicFadeOutSettings):void{
 		// Transformar contenido del elemento en <span> con cada letra para animar cada letra de manera individual.
-		this.#lettersToElements(spaceInLetters);
+		this.#lettersToElements(spaceInLetters, appear);
 
 		let index = 0, 
 			// Obtener los <span> inyectados.
@@ -539,11 +540,18 @@ class CosmicAnimation{
 					Math.floor(Math.random()*randomModes.length)
 				];
 
-				new CosmicAnimation("#" + randomId).fadeOutTo(randomMode).execute();
+				if(appear) new CosmicAnimation("#" + randomId).appearTo(randomMode).execute();
+				else new CosmicAnimation("#" + randomId).fadeOutTo(randomMode).execute();
 			// Si hay una direccion, desaparece hacia una direccion.
-			}else if(mode) new CosmicAnimation("#" + randomId).fadeOutTo(mode).execute();
+			}else if(mode){
+				if(appear) new CosmicAnimation("#" + randomId).appearTo(mode).execute();
+				else new CosmicAnimation("#" + randomId).fadeOutTo(mode).execute();
+
 			// Sino, solo desaparece.
-			else new CosmicAnimation("#" + randomId).fadeOut().execute();
+			}else{
+				if(appear) new CosmicAnimation("#" + randomId).appear().execute();
+				else new CosmicAnimation("#" + randomId).fadeOut().execute();
+			}
 
 			index++;
 
@@ -554,10 +562,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} mode 
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public fromWindowShowTo(mode:string = "right", duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -580,9 +584,6 @@ class CosmicAnimation{
 	/**
 	 * Desaperece el texto del elemento letra por letra.
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} spaceInLetters 
-	 * @param {number} time 
-	 * @returns {CosmicAnimation}
 	 */
 	public fadeOutLetters(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
@@ -593,12 +594,21 @@ class CosmicAnimation{
 	}
 
 	/**
+	 * Desaperece el texto del elemento letra por letra.
+	 * @author Brandon Anthony Olivares Amador
+	 */
+	public appearLetters(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
+		this.#fadeOut({
+			spaceInLetters, 
+			time, 
+			appear: true
+		});
+		return this;
+	}
+
+	/**
 	 * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} mode 
-	 * @param {number} spaceInLetters 
-	 * @param {number} time 
-	 * @returns {CosmicAnimation}
 	 */
 	public fadeOutLettersTo(mode:string = "top", spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
@@ -610,11 +620,22 @@ class CosmicAnimation{
 	}
 
 	/**
+	 * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
+	 * @author Brandon Anthony Olivares Amador
+	 */
+	public appearLettersTo(mode:string = "top", spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
+		this.#fadeOut({
+			mode, 
+			spaceInLetters, 
+			time, 
+			appear: true
+		});
+		return this;
+	}
+
+	/**
 	 * Desaperece el texto del elemento letra por letra hacia una direccion random.
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} spaceInLetters 
-	 * @param {number} time 
-	 * @returns {CosmicAnimation}
 	 */
 	public fadeOutLettersRandom(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
@@ -626,10 +647,21 @@ class CosmicAnimation{
 	}
 
 	/**
+	 * Desaperece el texto del elemento letra por letra hacia una direccion random.
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
+	 */
+	public appearLettersRandom(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
+		this.#fadeOut({
+			spaceInLetters, 
+			time, 
+			random: true, 
+			appear: true
+		});
+		return this;
+	}
+
+	/**
+	 * @author Brandon Anthony Olivares Amador
 	 */
 	public appear(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -641,10 +673,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} direction
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public appearTo(direction = 'bottom', duration = 1300, delay = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -664,9 +692,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public fadeOut(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -676,12 +701,12 @@ class CosmicAnimation{
 		return this;
 	}
 
+	public fadeIn(duration:number = 1300, delay:number = 0):CosmicAnimation{
+		return this.appear(duration, delay);
+	}
+
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} direction
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public fadeOutTo(direction:string = 'bottom', duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -701,9 +726,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public appearAndFadeOut(duration:number = 1300, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -716,9 +738,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public increment(duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -730,9 +749,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public incrementPulse(duration:number = 2000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -744,10 +760,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {string} direction
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public circleTo(direction:string = 'bottom', duration:number = 2500, delay:number = 3000):CosmicAnimation{
 		this.animation.delay = delay;
@@ -772,9 +784,6 @@ class CosmicAnimation{
 	
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public pulse(duration:number = 1000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -785,9 +794,6 @@ class CosmicAnimation{
 
 	/**
 	 * @author Brandon Anthony Olivares Amador
-	 * @param {number} duration 
-	 * @param {number} delay 
-	 * @returns {CosmicAnimation}
 	 */
 	public palpite(duration:number = 3000, delay:number = 0):CosmicAnimation{
 		this.animation.delay = delay;
@@ -799,11 +805,9 @@ class CosmicAnimation{
 
 	/**
 	 * ¿Ya liste animaciones a tu objeto CosmicAnimation?
-	 * 
 	 * Puedes limpiar todas las animaciones con este metodo.
 	 * 
 	 * @author Brandon Anthony Olivares Amador
-	 * @returns {CosmicAnimation}
 	 */
 	public reset(restartContent:boolean = true):CosmicAnimation{
 		const style:HTMLStyleElement = document.getElementsByTagName('style')[0];
@@ -834,7 +838,6 @@ class CosmicAnimation{
 		if(restartContent){
 			if(this.#originalContent) this.target.innerHTML = this.#originalContent;
 		}
-		this.#animationExists = false;
 
 		return this;
 	}
@@ -911,8 +914,6 @@ class CosmicAnimation{
 	 * @returns {CosmicAnimation}
 	 */
 	public execute():CosmicAnimation{
-		if(this.#animationExists) this.reset(false);
-
 		// Crea una etiqueta <style> para asignar la animacion.
 		var style:HTMLStyleElement = document.createElement('style');
 			style.setAttribute('type', 'text/css');
@@ -1077,8 +1078,6 @@ class CosmicAnimation{
 			// Sino, solo aplica la animacion y ya.
 			this.target.classList.add(this.animation.name);
 		}
-
-		this.#animationExists = true;
 		return this;
 	}
 }

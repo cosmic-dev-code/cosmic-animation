@@ -62,6 +62,7 @@ interface CosmicFadeOutSettings{
     spaceInLetters:number;
     time:number;
     random?:boolean;
+    appear?:boolean
 }
 
 export {

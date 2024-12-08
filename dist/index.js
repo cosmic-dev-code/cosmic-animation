@@ -9,14 +9,11 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _CosmicAnimation_instances, _a, _CosmicAnimation_assignDefaultValues, _CosmicAnimation_resources, _CosmicAnimation_validations, _CosmicAnimation_originalContent, _CosmicAnimation_animationExists, _CosmicAnimation_error, _CosmicAnimation_warning, _CosmicAnimation_addResources, _CosmicAnimation_lettersToElements, _CosmicAnimation_fadeOut, _CosmicAnimation_validateAnimationSettings;
+var _CosmicAnimation_instances, _a, _CosmicAnimation_assignDefaultValues, _CosmicAnimation_resources, _CosmicAnimation_validations, _CosmicAnimation_originalContent, _CosmicAnimation_createAutomaticName, _CosmicAnimation_error, _CosmicAnimation_warning, _CosmicAnimation_addResources, _CosmicAnimation_lettersToElements, _CosmicAnimation_fadeOut, _CosmicAnimation_validateAnimationSettings;
 /**
  * @class CosmicAnimation
  */
 class CosmicAnimation {
-    createAutomaticName() {
-        return ("cosmic-animation-" + Math.round(Math.random() * 300));
-    }
     /**
      * El constructor puede retornar un objeto CosmicAnimation o un arreglo de objetos CosmicAnimacion.
      * @author Brandon Anthony Olivares Amador
@@ -51,11 +48,6 @@ class CosmicAnimation {
          * @private
          */
         _CosmicAnimation_originalContent.set(this, ``);
-        /**
-         * Indica si el elemento ya tuvo una animacion asignada, (execute) o si todavia no la hay.
-         * @private
-         */
-        _CosmicAnimation_animationExists.set(this, false);
         // Ajustes comunes de una animacion CSS.
         this.animation = {
             name: 'name',
@@ -73,7 +65,7 @@ class CosmicAnimation {
         };
         __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_assignDefaultValues).call(this);
         if (!name)
-            name = this.createAutomaticName();
+            name = __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_createAutomaticName).call(this);
         if (__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(selector)) {
             __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, 'The selector (' + selector + ') is not valid.');
             // Primer Arreglo.
@@ -252,10 +244,6 @@ class CosmicAnimation {
     ;
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {string} mode
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     fromWindowShowTo(mode = "right", duration = 2000, delay = 0) {
         this.animation.delay = delay;
@@ -279,9 +267,6 @@ class CosmicAnimation {
     /**
      * Desaperece el texto del elemento letra por letra.
      * @author Brandon Anthony Olivares Amador
-     * @param {number} spaceInLetters
-     * @param {number} time
-     * @returns {CosmicAnimation}
      */
     fadeOutLetters(spaceInLetters = 6, time = 100) {
         __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
@@ -291,12 +276,20 @@ class CosmicAnimation {
         return this;
     }
     /**
+     * Desaperece el texto del elemento letra por letra.
+     * @author Brandon Anthony Olivares Amador
+     */
+    appearLetters(spaceInLetters = 6, time = 100) {
+        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
+            spaceInLetters,
+            time,
+            appear: true
+        });
+        return this;
+    }
+    /**
      * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
      * @author Brandon Anthony Olivares Amador
-     * @param {string} mode
-     * @param {number} spaceInLetters
-     * @param {number} time
-     * @returns {CosmicAnimation}
      */
     fadeOutLettersTo(mode = "top", spaceInLetters = 6, time = 100) {
         __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
@@ -307,11 +300,21 @@ class CosmicAnimation {
         return this;
     }
     /**
+     * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
+     * @author Brandon Anthony Olivares Amador
+     */
+    appearLettersTo(mode = "top", spaceInLetters = 6, time = 100) {
+        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
+            mode,
+            spaceInLetters,
+            time,
+            appear: true
+        });
+        return this;
+    }
+    /**
      * Desaperece el texto del elemento letra por letra hacia una direccion random.
      * @author Brandon Anthony Olivares Amador
-     * @param {number} spaceInLetters
-     * @param {number} time
-     * @returns {CosmicAnimation}
      */
     fadeOutLettersRandom(spaceInLetters = 6, time = 100) {
         __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
@@ -322,10 +325,20 @@ class CosmicAnimation {
         return this;
     }
     /**
+     * Desaperece el texto del elemento letra por letra hacia una direccion random.
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
+     */
+    appearLettersRandom(spaceInLetters = 6, time = 100) {
+        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
+            spaceInLetters,
+            time,
+            random: true,
+            appear: true
+        });
+        return this;
+    }
+    /**
+     * @author Brandon Anthony Olivares Amador
      */
     appear(duration = 1300, delay = 0) {
         this.animation.delay = delay;
@@ -336,10 +349,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {string} direction
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     appearTo(direction = 'bottom', duration = 1300, delay = 0) {
         this.animation.delay = delay;
@@ -362,9 +371,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     fadeOut(duration = 1300, delay = 0) {
         this.animation.delay = delay;
@@ -373,12 +379,11 @@ class CosmicAnimation {
         this.opacity(1, 0);
         return this;
     }
+    fadeIn(duration = 1300, delay = 0) {
+        return this.appear(duration, delay);
+    }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {string} direction
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     fadeOutTo(direction = 'bottom', duration = 1300, delay = 0) {
         this.animation.delay = delay;
@@ -401,9 +406,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     appearAndFadeOut(duration = 1300, delay = 0) {
         this.animation.delay = delay;
@@ -415,9 +417,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     increment(duration = 2000, delay = 0) {
         this.animation.delay = delay;
@@ -428,9 +427,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     incrementPulse(duration = 2000, delay = 0) {
         this.animation.delay = delay;
@@ -441,10 +437,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {string} direction
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     circleTo(direction = 'bottom', duration = 2500, delay = 3000) {
         this.animation.delay = delay;
@@ -469,9 +461,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     pulse(duration = 1000, delay = 0) {
         this.animation.delay = delay;
@@ -481,9 +470,6 @@ class CosmicAnimation {
     }
     /**
      * @author Brandon Anthony Olivares Amador
-     * @param {number} duration
-     * @param {number} delay
-     * @returns {CosmicAnimation}
      */
     palpite(duration = 3000, delay = 0) {
         this.animation.delay = delay;
@@ -494,11 +480,9 @@ class CosmicAnimation {
     }
     /**
      * ¿Ya liste animaciones a tu objeto CosmicAnimation?
-     *
      * Puedes limpiar todas las animaciones con este metodo.
      *
      * @author Brandon Anthony Olivares Amador
-     * @returns {CosmicAnimation}
      */
     reset(restartContent = true) {
         const style = document.getElementsByTagName('style')[0];
@@ -518,7 +502,6 @@ class CosmicAnimation {
             if (__classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f"))
                 this.target.innerHTML = __classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f");
         }
-        __classPrivateFieldSet(this, _CosmicAnimation_animationExists, false, "f");
         return this;
     }
     /**
@@ -564,8 +547,6 @@ class CosmicAnimation {
      */
     execute() {
         var _b, _c, _d, _e, _f, _g;
-        if (__classPrivateFieldGet(this, _CosmicAnimation_animationExists, "f"))
-            this.reset(false);
         // Crea una etiqueta <style> para asignar la animacion.
         var style = document.createElement('style');
         style.setAttribute('type', 'text/css');
@@ -704,11 +685,10 @@ class CosmicAnimation {
             // Sino, solo aplica la animacion y ya.
             this.target.classList.add(this.animation.name);
         }
-        __classPrivateFieldSet(this, _CosmicAnimation_animationExists, true, "f");
         return this;
     }
 }
-_a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimation_validations = new WeakMap(), _CosmicAnimation_originalContent = new WeakMap(), _CosmicAnimation_animationExists = new WeakMap(), _CosmicAnimation_instances = new WeakSet(), _CosmicAnimation_assignDefaultValues = function _CosmicAnimation_assignDefaultValues() {
+_a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimation_validations = new WeakMap(), _CosmicAnimation_originalContent = new WeakMap(), _CosmicAnimation_instances = new WeakSet(), _CosmicAnimation_assignDefaultValues = function _CosmicAnimation_assignDefaultValues() {
     // @ts-ignore
     this.target.classList = "";
     this.animation.name = ("cosmic-animation-" + Math.round(Math.random() * 300));
@@ -744,6 +724,8 @@ _a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimati
             part9: []
         }
     }, "f");
+}, _CosmicAnimation_createAutomaticName = function _CosmicAnimation_createAutomaticName() {
+    return ("cosmic-animation-" + Math.round(Math.random() * 300));
 }, _CosmicAnimation_error = function _CosmicAnimation_error(args) {
     if (arguments.length > 1) {
         for (let arg of arguments)
@@ -877,7 +859,7 @@ _a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimati
             __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, start, "", part, isTransform);
         }
     }
-}, _CosmicAnimation_lettersToElements = function _CosmicAnimation_lettersToElements(spaceInLetters) {
+}, _CosmicAnimation_lettersToElements = function _CosmicAnimation_lettersToElements(spaceInLetters, appear = false) {
     // Respaldo.
     __classPrivateFieldSet(this, _CosmicAnimation_originalContent, this.target.innerHTML, "f");
     if (this.target.textContent) {
@@ -891,19 +873,26 @@ _a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimati
             // Las demas letras son inyectadas en otro <span>, esto se hace para poder animar cada <span>
             if (letter === " " || letter === "\n" || letter === "\t") {
                 this.target.innerHTML += (`
-						<span style="display: inline-block; margin: 0 ${spaceInLetters}px;"></span>
+						<span style="
+							${appear ? 'opacity: 0;' : ''}
+							display: inline-block;
+							margin: 0 ${spaceInLetters}px;
+						"></span>
 					`).trim();
             }
             else {
                 this.target.innerHTML += (`
-						<span style="display: inline-block;">${letter}</span>
+						<span style="
+							${appear ? 'opacity: 0;' : ''}
+							display: inline-block;
+						">${letter}</span>
 					`).trim();
             }
         });
     }
-}, _CosmicAnimation_fadeOut = function _CosmicAnimation_fadeOut({ mode, spaceInLetters, time, random }) {
+}, _CosmicAnimation_fadeOut = function _CosmicAnimation_fadeOut({ mode, spaceInLetters, time, random, appear }) {
     // Transformar contenido del elemento en <span> con cada letra para animar cada letra de manera individual.
-    __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_lettersToElements).call(this, spaceInLetters);
+    __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_lettersToElements).call(this, spaceInLetters, appear);
     let index = 0, 
     // Obtener los <span> inyectados.
     childs = this.target.children, 
@@ -927,14 +916,25 @@ _a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimati
         // Si no hay direccion, sino que es cada una a lo random.
         if (random) {
             let randomMode = randomModes[Math.floor(Math.random() * randomModes.length)];
-            new _a("#" + randomId).fadeOutTo(randomMode).execute();
+            if (appear)
+                new _a("#" + randomId).appearTo(randomMode).execute();
+            else
+                new _a("#" + randomId).fadeOutTo(randomMode).execute();
             // Si hay una direccion, desaparece hacia una direccion.
         }
-        else if (mode)
-            new _a("#" + randomId).fadeOutTo(mode).execute();
-        // Sino, solo desaparece.
-        else
-            new _a("#" + randomId).fadeOut().execute();
+        else if (mode) {
+            if (appear)
+                new _a("#" + randomId).appearTo(mode).execute();
+            else
+                new _a("#" + randomId).fadeOutTo(mode).execute();
+            // Sino, solo desaparece.
+        }
+        else {
+            if (appear)
+                new _a("#" + randomId).appear().execute();
+            else
+                new _a("#" + randomId).fadeOut().execute();
+        }
         index++;
         // Detenemos el intervalo cuando ya hayamos recorrido todos los <span>
         if (index >= childs.length)
