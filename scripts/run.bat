@@ -1,5 +1,6 @@
 echo off
     echo TYPESCRIPT
     start /B npx tsc --watch > ../src/logs/tsc.log
-    start /B cd ./dist && npx http-server -s -p 8080
+    echo SERVER
+    start /B npx http-server ./dist -s -p 3001 > ../src/logs/server.log
 pause > nul
