@@ -17,8 +17,17 @@
         window.addEventListener("DOMContentLoaded", event => {
             const h3 = new CosmicAnimation("h3");
 
-            h3.appearLettersTo("up").execute().ends(() => {
-                h3.reset().fadeOutLettersTo("bottom").execute();
+            // h3.appearLettersTo("up").execute().ends(() => {
+            //     h3.reset().fadeOutLettersTo("bottom").execute();
+            // })
+
+            h3.appearTo("top").execute().ends(() => {
+                h3.reset().increment().execute().ends(() => {
+                    h3.reset();
+
+                    h3.animation.iterationCount = Infinity;
+                    h3.palpite().execute();
+                })
             })
         });
     </script>
