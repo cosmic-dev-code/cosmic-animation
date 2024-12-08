@@ -2,3 +2,115 @@
 
 
 11:57:40 PM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:02:13 AM - File change detected. Starting incremental compilation...
+
+../src/index.ts(1027,8): error TS2551: Property 'CosmicAnimation' does not exist on type 'Window & typeof globalThis'. Did you mean 'CSSAnimation'?
+
+12:02:13 AM - Found 1 error. Watching for file changes.
+[2J[3J[H12:02:16 AM - File change detected. Starting incremental compilation...
+
+
+12:02:17 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:11:30 AM - File change detected. Starting incremental compilation...
+
+../src/index.ts(935,8): error TS2451: Cannot redeclare block-scoped variable 'valueTransform'.
+../src/index.ts(935,33): error TS2451: Cannot redeclare block-scoped variable 'valueNormal'.
+../src/index.ts(940,8): error TS2451: Cannot redeclare block-scoped variable 'valueTransform'.
+../src/index.ts(941,8): error TS2451: Cannot redeclare block-scoped variable 'valueNormal'.
+../src/index.ts(951,7): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(951,37): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(957,9): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(958,23): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(962,9): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(963,12): error TS2454: Variable 'valueNormal' is used before being assigned.
+
+12:11:30 AM - Found 10 errors. Watching for file changes.
+[2J[3J[H12:12:32 AM - File change detected. Starting incremental compilation...
+
+../src/index.ts(951,7): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(951,37): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(957,9): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(958,23): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(962,9): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(963,12): error TS2454: Variable 'valueNormal' is used before being assigned.
+
+12:12:32 AM - Found 6 errors. Watching for file changes.
+[2J[3J[H12:13:00 AM - File change detected. Starting incremental compilation...
+
+../src/index.ts(954,7): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(954,37): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(960,9): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(961,23): error TS2454: Variable 'valueTransform' is used before being assigned.
+../src/index.ts(965,9): error TS2454: Variable 'valueNormal' is used before being assigned.
+../src/index.ts(966,12): error TS2454: Variable 'valueNormal' is used before being assigned.
+
+12:13:00 AM - Found 6 errors. Watching for file changes.
+[2J[3J[H12:13:23 AM - File change detected. Starting incremental compilation...
+
+
+12:13:24 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:13:43 AM - File change detected. Starting incremental compilation...
+
+
+12:13:43 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:14:54 AM - File change detected. Starting incremental compilation...
+
+
+12:14:54 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:15:25 AM - File change detected. Starting incremental compilation...
+
+
+12:15:25 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:15:48 AM - File change detected. Starting incremental compilation...
+
+
+12:15:48 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:17:50 AM - File change detected. Starting incremental compilation...
+
+
+12:17:50 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:19:21 AM - File change detected. Starting incremental compilation...
+
+
+12:19:21 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:20:32 AM - File change detected. Starting incremental compilation...
+
+../src/index.ts(986,11): error TS2339: Property 'ANIMATION_PARTS' does not exist on type 'Window & typeof globalThis'.
+
+12:20:32 AM - Found 1 error. Watching for file changes.
+[2J[3J[H12:21:15 AM - File change detected. Starting incremental compilation...
+
+
+12:21:15 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:21:44 AM - File change detected. Starting incremental compilation...
+
+
+12:21:44 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:25:45 AM - File change detected. Starting incremental compilation...
+
+
+12:25:45 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:28:18 AM - File change detected. Starting incremental compilation...
+
+
+12:28:18 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:28:25 AM - File change detected. Starting incremental compilation...
+
+
+12:28:26 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:28:45 AM - File change detected. Starting incremental compilation...
+
+
+12:28:45 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:35:13 AM - File change detected. Starting incremental compilation...
+
+
+12:35:14 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:36:42 AM - File change detected. Starting incremental compilation...
+
+
+12:36:42 AM - Found 0 errors. Watching for file changes.
+[2J[3J[H12:40:14 AM - File change detected. Starting incremental compilation...
+
+
+12:40:14 AM - Found 0 errors. Watching for file changes.

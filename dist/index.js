@@ -1,50 +1,19 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
 var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _CosmicAnimation_instances, _a, _CosmicAnimation_error, _CosmicAnimation_warning, _CosmicAnimation_addResources, _CosmicAnimation_lettersToElements, _CosmicAnimation_fadeOut, _CosmicAnimation_validateAnimationSettings;
+var _CosmicAnimation_instances, _a, _CosmicAnimation_assignDefaultValues, _CosmicAnimation_resources, _CosmicAnimation_validations, _CosmicAnimation_originalContent, _CosmicAnimation_animationExists, _CosmicAnimation_error, _CosmicAnimation_warning, _CosmicAnimation_addResources, _CosmicAnimation_lettersToElements, _CosmicAnimation_fadeOut, _CosmicAnimation_validateAnimationSettings;
 /**
  * @class CosmicAnimation
  */
 class CosmicAnimation {
-    assignDefaultValues() {
-        // @ts-ignore
-        this.target.classList = "";
-        this.animation.name = ("cosmic-animation-" + Math.round(Math.random() * 300));
-        this.resources = {
-            type: 'default',
-            // 3/3
-            partsThree: {
-                part1: [], part2: [], part3: []
-            },
-            partsThreeTransform: {
-                part1: [], part2: [], part3: []
-            },
-            // 5/5
-            parts: {
-                part1: [], part2: [],
-                part3: [], part4: [],
-                part5: []
-            },
-            partsTransform: {
-                part1: [], part2: [],
-                part3: [], part4: [],
-                part5: []
-            },
-            // 9/9
-            partsNine: {
-                part1: [], part2: [], part3: [], part4: [],
-                part5: [], part6: [], part7: [], part8: [],
-                part9: []
-            },
-            partsNineTransform: {
-                part1: [], part2: [], part3: [], part4: [],
-                part5: [], part6: [], part7: [], part8: [],
-                part9: []
-            }
-        };
-    }
     createAutomaticName() {
         return ("cosmic-animation-" + Math.round(Math.random() * 300));
     }
@@ -59,10 +28,16 @@ class CosmicAnimation {
         _CosmicAnimation_instances.add(this);
         // Por defecto crea un elemento DIV.
         this.target = document.createElement('div');
-        // Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
+        /**
+         * Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
+         * @private
+         */
         // @ts-ignore
-        this.resources = {};
-        this.validations = {
+        _CosmicAnimation_resources.set(this, {});
+        /**
+         * @private
+         */
+        _CosmicAnimation_validations.set(this, {
             numeric: /^[0-9]$/,
             empty: function (data) {
                 return (data === undefined ||
@@ -70,7 +45,17 @@ class CosmicAnimation {
                     Number.isNaN(data) ||
                     data === "");
             }
-        };
+        });
+        /**
+         * Si el usuario desea reiniciar el elemento, tenemos un respaldo del contenido.
+         * @private
+         */
+        _CosmicAnimation_originalContent.set(this, ``);
+        /**
+         * Indica si el elemento ya tuvo una animacion asignada, (execute) o si todavia no la hay.
+         * @private
+         */
+        _CosmicAnimation_animationExists.set(this, false);
         // Ajustes comunes de una animacion CSS.
         this.animation = {
             name: 'name',
@@ -86,10 +71,10 @@ class CosmicAnimation {
             enabled: false,
             infinite: false // Indica si solo se ejecuta una vez o cada vez que entre y salga del viewport.
         };
-        this.assignDefaultValues();
+        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_assignDefaultValues).call(this);
         if (!name)
             name = this.createAutomaticName();
-        if (this.validations.empty(selector)) {
+        if (__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(selector)) {
             __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, 'The selector (' + selector + ') is not valid.');
             // Primer Arreglo.
         }
@@ -101,7 +86,7 @@ class CosmicAnimation {
                 for (let i in selector) {
                     // Selector y Animacion
                     const selectorName = selector[i], animationName = name[i];
-                    if (!this.validations.empty(selectorName) && !this.validations.empty(animationName)) {
+                    if (!__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(selectorName) && !__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(animationName)) {
                         // Se relaciona cada Nombre con su Animacion.
                         arrCosmicsElements.push(new _a(selectorName, animationName));
                     }
@@ -303,6 +288,7 @@ class CosmicAnimation {
             spaceInLetters,
             time
         });
+        return this;
     }
     /**
      * Desaperece el texto del elemento letra por letra hacia una direccion especificada.
@@ -318,6 +304,7 @@ class CosmicAnimation {
             spaceInLetters,
             time
         });
+        return this;
     }
     /**
      * Desaperece el texto del elemento letra por letra hacia una direccion random.
@@ -332,6 +319,7 @@ class CosmicAnimation {
             time,
             random: true
         });
+        return this;
     }
     /**
      * @author Brandon Anthony Olivares Amador
@@ -512,7 +500,7 @@ class CosmicAnimation {
      * @author Brandon Anthony Olivares Amador
      * @returns {CosmicAnimation}
      */
-    deleteAnimation() {
+    reset(restartContent = true) {
         const style = document.getElementsByTagName('style')[0];
         // las animaciones de este elemento inyectadas dentro del primer archivo de estilos que habia.
         if (style) {
@@ -525,7 +513,12 @@ class CosmicAnimation {
             style.innerHTML = (partOne + partTwo);
         }
         // Restauramos ajustes por defecto.
-        this.assignDefaultValues();
+        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_assignDefaultValues).call(this);
+        if (restartContent) {
+            if (__classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f"))
+                this.target.innerHTML = __classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f");
+        }
+        __classPrivateFieldSet(this, _CosmicAnimation_animationExists, false, "f");
         return this;
     }
     /**
@@ -534,7 +527,7 @@ class CosmicAnimation {
      * @param {Function} callback
      * @param {Function} callbackErr
      */
-    terminate(callback, callbackErr) {
+    ends(callback, callbackErr) {
         try {
             // Suma el tiempo de duracion y retraso.
             let time = (this.animation.delay + this.animation.duration);
@@ -560,14 +553,19 @@ class CosmicAnimation {
      * @author Brandon Anthony Olivares Amador
      * @returns {Promise<boolean|any>}
      */
-    asyncTerminate() {
+    asyncEnds() {
         return new Promise((resolve, reject) => {
-            this.terminate(() => resolve(true), (error) => reject(error));
+            this.ends(() => resolve(true), (error) => reject(error));
         });
     }
-    // Ejecuta las animaciones.
+    /**
+     * Ejecuta las animaciones.
+     * @returns {CosmicAnimation}
+     */
     execute() {
         var _b, _c, _d, _e, _f, _g;
+        if (__classPrivateFieldGet(this, _CosmicAnimation_animationExists, "f"))
+            this.reset(false);
         // Crea una etiqueta <style> para asignar la animacion.
         var style = document.createElement('style');
         style.setAttribute('type', 'text/css');
@@ -576,13 +574,6 @@ class CosmicAnimation {
             // tomamos el primer <style>
             style = document.getElementsByTagName('style')[0];
         }
-        // Toma un arreglo de transformaciones y lo convierte a "string".
-        const transformPropertiesToCSS = (part) => {
-            if (part.length > 0)
-                return (`transform: ${part.join(' ')};`);
-            else
-                return ("");
-        };
         // Este objeto contendra varios objetos, las partes de la animacion.
         /**
          *  {
@@ -601,7 +592,7 @@ class CosmicAnimation {
         let percentageFive = ['0%', '25%', '50%', '75%', '100%'];
         let partsNine = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7', 'part8', 'part9'];
         let percentageNine = ['0%', '12.5%', '25%', '37.5%', '50%', '62.5%', '75%', '87.5%', '100%'];
-        const typeAnimation = this.resources.type;
+        const typeAnimation = __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type;
         // Extrae la cantidad de veces a iterar segun el tipo de animacion.
         const iterarion = (typeAnimation === "default" ? partsFive.length : (typeAnimation === "nine" ? partsNine.length : partsThree.length)) - 1;
         for (let i = 0; i <= iterarion; i++) {
@@ -624,16 +615,16 @@ class CosmicAnimation {
             // Extrae las propiedades, (normales) y (transformaciones).
             let valueTransform, valueNormal;
             if (typeAnimation === "default") {
-                valueTransform = (_b = Object.getOwnPropertyDescriptor(this.resources.partsTransform, part)) === null || _b === void 0 ? void 0 : _b.value;
-                valueNormal = (_c = Object.getOwnPropertyDescriptor(this.resources.parts, part)) === null || _c === void 0 ? void 0 : _c.value;
+                valueTransform = (_b = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform, part)) === null || _b === void 0 ? void 0 : _b.value;
+                valueNormal = (_c = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts, part)) === null || _c === void 0 ? void 0 : _c.value;
             }
             else if (typeAnimation === "nine") {
-                valueTransform = (_d = Object.getOwnPropertyDescriptor(this.resources.partsNineTransform, part)) === null || _d === void 0 ? void 0 : _d.value;
-                valueNormal = (_e = Object.getOwnPropertyDescriptor(this.resources.partsNine, part)) === null || _e === void 0 ? void 0 : _e.value;
+                valueTransform = (_d = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform, part)) === null || _d === void 0 ? void 0 : _d.value;
+                valueNormal = (_e = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine, part)) === null || _e === void 0 ? void 0 : _e.value;
             }
             else {
-                valueTransform = (_f = Object.getOwnPropertyDescriptor(this.resources.partsThreeTransform, part)) === null || _f === void 0 ? void 0 : _f.value;
-                valueNormal = (_g = Object.getOwnPropertyDescriptor(this.resources.partsThree, part)) === null || _g === void 0 ? void 0 : _g.value;
+                valueTransform = (_f = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform, part)) === null || _f === void 0 ? void 0 : _f.value;
+                valueNormal = (_g = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree, part)) === null || _g === void 0 ? void 0 : _g.value;
             }
             // Verificamos que los (value) de las (part) de (resources) no se encuentren vacios.
             /**
@@ -670,7 +661,7 @@ class CosmicAnimation {
             window.ANIMATION_PARTS = ANIMATION_PARTS;
             return partsValues.join("");
         };
-        console.log("ANIMATION_PARTS => ", ANIMATION_PARTS);
+        console.log(this.animation);
         // En la hoja de estilos que inyectamos, ahora agregamos las configuraciones de nuestra animacion.
         style.innerHTML += (`
 			.${this.animation.name}{
@@ -713,9 +704,47 @@ class CosmicAnimation {
             // Sino, solo aplica la animacion y ya.
             this.target.classList.add(this.animation.name);
         }
+        __classPrivateFieldSet(this, _CosmicAnimation_animationExists, true, "f");
+        return this;
     }
 }
-_a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimation_error = function _CosmicAnimation_error(args) {
+_a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimation_validations = new WeakMap(), _CosmicAnimation_originalContent = new WeakMap(), _CosmicAnimation_animationExists = new WeakMap(), _CosmicAnimation_instances = new WeakSet(), _CosmicAnimation_assignDefaultValues = function _CosmicAnimation_assignDefaultValues() {
+    // @ts-ignore
+    this.target.classList = "";
+    this.animation.name = ("cosmic-animation-" + Math.round(Math.random() * 300));
+    __classPrivateFieldSet(this, _CosmicAnimation_resources, {
+        type: 'default',
+        // 3/3
+        partsThree: {
+            part1: [], part2: [], part3: []
+        },
+        partsThreeTransform: {
+            part1: [], part2: [], part3: []
+        },
+        // 5/5
+        parts: {
+            part1: [], part2: [],
+            part3: [], part4: [],
+            part5: []
+        },
+        partsTransform: {
+            part1: [], part2: [],
+            part3: [], part4: [],
+            part5: []
+        },
+        // 9/9
+        partsNine: {
+            part1: [], part2: [], part3: [], part4: [],
+            part5: [], part6: [], part7: [], part8: [],
+            part9: []
+        },
+        partsNineTransform: {
+            part1: [], part2: [], part3: [], part4: [],
+            part5: [], part6: [], part7: [], part8: [],
+            part9: []
+        }
+    }, "f");
+}, _CosmicAnimation_error = function _CosmicAnimation_error(args) {
     if (arguments.length > 1) {
         for (let arg of arguments)
             __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, arg);
@@ -757,12 +786,12 @@ _a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimati
      */
     if (typeof parts === "number") {
         if (isTransform) {
-            this.resources.partsTransform.part1.push(start);
-            this.resources.partsTransform.part5.push(end);
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform.part1.push(start);
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform.part5.push(end);
         }
         else {
-            this.resources.parts.part1.push(start);
-            this.resources.parts.part5.push(end);
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts.part1.push(start);
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts.part5.push(end);
         }
         return;
     }
@@ -777,58 +806,56 @@ _a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimati
         let firstNumber = parts.split("/")[0], // 1
         partName = `part${firstNumber}`; // part1, part2, part3, ...
         if (parts.includes("/9")) {
-            this.resources.type = "nine";
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "nine";
             if (isTransform) {
                 // @ts-ignore
-                if (Array.isArray(this.resources.partsNineTransform[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform[partName])) {
                     // @ts-ignore
-                    this.resources.partsNineTransform[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform[partName].push(start);
                 }
             }
             else {
                 // @ts-ignore
-                if (Array.isArray(this.resources.partsNine[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine[partName])) {
                     // @ts-ignore
-                    this.resources.partsNine[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine[partName].push(start);
                 }
             }
             return;
         }
         else if (parts.includes("/3")) {
-            this.resources.type = "three";
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "three";
             if (isTransform) {
                 // @ts-ignore
-                if (Array.isArray(this.resources.partsThreeTransform[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform[partName])) {
                     // @ts-ignore
-                    this.resources.partsThreeTransform[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform[partName].push(start);
                 }
             }
             else {
                 // @ts-ignore
-                if (Array.isArray(this.resources.partsThree[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree[partName])) {
                     // @ts-ignore
-                    this.resources.partsThree[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree[partName].push(start);
                 }
             }
             return;
         }
         else if (parts.includes("/5")) {
             // Indicar que es por defecto.
-            this.resources.type = "default";
+            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "default";
             if (isTransform) {
-                console.log("part T => ", start, end, parts);
                 // @ts-ignore
-                if (Array.isArray(this.resources.partsTransform[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform[partName])) {
                     // @ts-ignore
-                    this.resources.partsTransform[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform[partName].push(start);
                 }
             }
             else {
-                console.log("part => ", start, end, parts);
                 // @ts-ignore
-                if (Array.isArray(this.resources.parts[partName])) {
+                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts[partName])) {
                     // @ts-ignore
-                    this.resources.parts[partName].push(start);
+                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts[partName].push(start);
                 }
             }
             return;
@@ -851,6 +878,8 @@ _a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimati
         }
     }
 }, _CosmicAnimation_lettersToElements = function _CosmicAnimation_lettersToElements(spaceInLetters) {
+    // Respaldo.
+    __classPrivateFieldSet(this, _CosmicAnimation_originalContent, this.target.innerHTML, "f");
     if (this.target.textContent) {
         // Obtenermos el texto del elemento, convertido en array.
         let letters = this.target.textContent.split("");
@@ -892,7 +921,7 @@ _a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimati
     for (let i = 0; i < childs.length; i++)
         createAutomaticRandIds();
     // Iterar <span> inyectados.
-    setInterval(() => {
+    const interval = setInterval(() => {
         const span = childs[index], randomId = `id${ids[index]}`;
         span.setAttribute("id", randomId);
         // Si no hay direccion, sino que es cada una a lo random.
@@ -907,10 +936,13 @@ _a = CosmicAnimation, _CosmicAnimation_instances = new WeakSet(), _CosmicAnimati
         else
             new _a("#" + randomId).fadeOut().execute();
         index++;
+        // Detenemos el intervalo cuando ya hayamos recorrido todos los <span>
+        if (index >= childs.length)
+            clearInterval(interval);
     }, time);
 }, _CosmicAnimation_validateAnimationSettings = function _CosmicAnimation_validateAnimationSettings() {
     // Las iteraciones deben ser un (numero entero), (pero puede ser Infinity)
-    if (!Number.isInteger(this.animation.iterationCount)) {
+    if (!Number.isInteger(this.animation.iterationCount) && typeof this.animation.iterationCount !== "number") {
         this.animation.iterationCount = 1;
     }
     // La duracion debe ser (finita) y debe ser un (numero entero).

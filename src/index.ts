@@ -8,11 +8,14 @@ class CosmicAnimation{
 	// Por defecto crea un elemento DIV.
 	public target:HTMLElement = document.createElement('div');
 
-	private assignDefaultValues():void{
+	/**
+	 * @private
+	 */
+	#assignDefaultValues():void{
 		// @ts-ignore
 		this.target.classList = "";
 		this.animation.name = ("cosmic-animation-"+Math.round(Math.random()*300));
-		this.resources = {
+		this.#resources = {
 			type: 'default',
 			// 3/3
 			partsThree: {
@@ -46,11 +49,17 @@ class CosmicAnimation{
 		};
 	}
 
-	// Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
+	/**
+	 * Aqui se manejan las etapas de la animacion, (segun la que el usuario prefiera).
+	 * @private
+	 */
 	// @ts-ignore
-	private resources:CosmicAnimateResources = {};
+	#resources:CosmicAnimateResources = {};
 
-	private validations:CosmicAnimateValidations = {
+	/**
+	 * @private
+	 */
+	#validations:CosmicAnimateValidations = {
 		numeric: /^[0-9]$/, 
 		empty: function(data:any):boolean{
 			return (
@@ -61,6 +70,18 @@ class CosmicAnimation{
 			);
 		}
 	};
+
+	/**
+	 * Si el usuario desea reiniciar el elemento, tenemos un respaldo del contenido.
+	 * @private
+	 */
+	#originalContent:string = ``;
+
+	/**
+	 * Indica si el elemento ya tuvo una animacion asignada, (execute) o si todavia no la hay.
+	 * @private
+	 */
+	#animationExists:boolean = false;
 
 	// Ajustes comunes de una animacion CSS.
 	public animation:CosmicAnimateSettings = {
@@ -91,11 +112,11 @@ class CosmicAnimation{
 	 * @return {CosmicAnimation|CosmicAnimation[]}
 	 */
 	constructor(selector?:string|string[], name?:string|string[]){
-		this.assignDefaultValues();
+		this.#assignDefaultValues();
 
 		if(!name) name = this.createAutomaticName() as string;
 
-		if(this.validations.empty(selector)){
+		if(this.#validations.empty(selector)){
 			this.#error('The selector ('+selector+') is not valid.');
 
 		// Primer Arreglo.
@@ -110,7 +131,7 @@ class CosmicAnimation{
 					const selectorName:string = selector[i], 
 						  animationName:string = name[i];
 
-					if(!this.validations.empty(selectorName) && !this.validations.empty(animationName)){
+					if(!this.#validations.empty(selectorName) && !this.#validations.empty(animationName)){
 						// Se relaciona cada Nombre con su Animacion.
 						arrCosmicsElements.push(new CosmicAnimation(selectorName, animationName));
 					}else{
@@ -213,11 +234,11 @@ class CosmicAnimation{
 		 */
 		if(typeof parts === "number"){
 			if(isTransform){
-				this.resources.partsTransform.part1.push(start);
-				this.resources.partsTransform.part5.push(end);
+				this.#resources.partsTransform.part1.push(start);
+				this.#resources.partsTransform.part5.push(end);
 			}else{
-				this.resources.parts.part1.push(start);
-				this.resources.parts.part5.push(end);
+				this.#resources.parts.part1.push(start);
+				this.#resources.parts.part5.push(end);
 			}
 			return;
 		}
@@ -234,56 +255,54 @@ class CosmicAnimation{
 				partName:string = `part${firstNumber}`; // part1, part2, part3, ...
 		
 			if(parts.includes("/9")){
-				this.resources.type = "nine";
+				this.#resources.type = "nine";
 
 				if(isTransform){
 					// @ts-ignore
-					if(Array.isArray(this.resources.partsNineTransform[partName])){
+					if(Array.isArray(this.#resources.partsNineTransform[partName])){
 						// @ts-ignore
-						this.resources.partsNineTransform[partName].push(start);
+						this.#resources.partsNineTransform[partName].push(start);
 					}
 				}else{
 					// @ts-ignore
-					if(Array.isArray(this.resources.partsNine[partName])){
+					if(Array.isArray(this.#resources.partsNine[partName])){
 						// @ts-ignore
-						this.resources.partsNine[partName].push(start);
+						this.#resources.partsNine[partName].push(start);
 					}
 				}
 				return;
 			}else if(parts.includes("/3")){
-				this.resources.type = "three";
+				this.#resources.type = "three";
 
 				if(isTransform){
 					// @ts-ignore
-					if(Array.isArray(this.resources.partsThreeTransform[partName])){
+					if(Array.isArray(this.#resources.partsThreeTransform[partName])){
 						// @ts-ignore
-						this.resources.partsThreeTransform[partName].push(start);
+						this.#resources.partsThreeTransform[partName].push(start);
 					}
 				}else{
 					// @ts-ignore
-					if(Array.isArray(this.resources.partsThree[partName])){
+					if(Array.isArray(this.#resources.partsThree[partName])){
 						// @ts-ignore
-						this.resources.partsThree[partName].push(start);
+						this.#resources.partsThree[partName].push(start);
 					}
 				}
 				return;
 			}else if(parts.includes("/5")){
 				// Indicar que es por defecto.
-				this.resources.type = "default";
+				this.#resources.type = "default";
 
 				if(isTransform){
-					console.log("part T => ", start, end, parts)
 					// @ts-ignore
-					if(Array.isArray(this.resources.partsTransform[partName])){
+					if(Array.isArray(this.#resources.partsTransform[partName])){
 						// @ts-ignore
-						this.resources.partsTransform[partName].push(start);
+						this.#resources.partsTransform[partName].push(start);
 					}
 				}else{
-					console.log("part => ", start, end, parts)
 					// @ts-ignore
-					if(Array.isArray(this.resources.parts[partName])){
+					if(Array.isArray(this.#resources.parts[partName])){
 						// @ts-ignore
-						this.resources.parts[partName].push(start);
+						this.#resources.parts[partName].push(start);
 					}
 				}
 				return;
@@ -452,8 +471,10 @@ class CosmicAnimation{
 	 * @private
 	 */
 	#lettersToElements(spaceInLetters:number):void{
-		if(this.target.textContent){
+		// Respaldo.
+		this.#originalContent = this.target.innerHTML;
 
+		if(this.target.textContent){
 			// Obtenermos el texto del elemento, convertido en array.
 			let letters:string[] = this.target.textContent.split("");
 
@@ -506,7 +527,7 @@ class CosmicAnimation{
 		for(let i = 0; i < childs.length; i++) createAutomaticRandIds();
 
 		// Iterar <span> inyectados.
-		setInterval(() => {
+		const interval:number = setInterval(() => {
 			const span = childs[index] as HTMLSpanElement, 
 				  randomId:string = `id${ids[index]}`;
 
@@ -525,6 +546,9 @@ class CosmicAnimation{
 			else new CosmicAnimation("#" + randomId).fadeOut().execute();
 
 			index++;
+
+			// Detenemos el intervalo cuando ya hayamos recorrido todos los <span>
+			if(index >= childs.length) clearInterval(interval);
 		}, time);
 	}
 
@@ -560,11 +584,12 @@ class CosmicAnimation{
 	 * @param {number} time 
 	 * @returns {CosmicAnimation}
 	 */
-	public fadeOutLetters(spaceInLetters:number = 6, time:number = 100):void{
+	public fadeOutLetters(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
 			spaceInLetters, 
 			time
 		});
+		return this;
 	}
 
 	/**
@@ -575,12 +600,13 @@ class CosmicAnimation{
 	 * @param {number} time 
 	 * @returns {CosmicAnimation}
 	 */
-	public fadeOutLettersTo(mode:string = "top", spaceInLetters:number = 6, time:number = 100):void{
+	public fadeOutLettersTo(mode:string = "top", spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
 			mode, 
 			spaceInLetters, 
 			time
 		});
+		return this;
 	}
 
 	/**
@@ -590,12 +616,13 @@ class CosmicAnimation{
 	 * @param {number} time 
 	 * @returns {CosmicAnimation}
 	 */
-	public fadeOutLettersRandom(spaceInLetters:number = 6, time:number = 100):void{
+	public fadeOutLettersRandom(spaceInLetters:number = 6, time:number = 100):CosmicAnimation{
 		this.#fadeOut({
 			spaceInLetters, 
 			time, 
 			random: true
 		});
+		return this;
 	}
 
 	/**
@@ -778,7 +805,7 @@ class CosmicAnimation{
 	 * @author Brandon Anthony Olivares Amador
 	 * @returns {CosmicAnimation}
 	 */
-	public deleteAnimation():CosmicAnimation{
+	public reset(restartContent:boolean = true):CosmicAnimation{
 		const style:HTMLStyleElement = document.getElementsByTagName('style')[0];
 
 		// las animaciones de este elemento inyectadas dentro del primer archivo de estilos que habia.
@@ -802,7 +829,12 @@ class CosmicAnimation{
 		}
 
 		// Restauramos ajustes por defecto.
-		this.assignDefaultValues();
+		this.#assignDefaultValues();
+
+		if(restartContent){
+			if(this.#originalContent) this.target.innerHTML = this.#originalContent;
+		}
+		this.#animationExists = false;
 
 		return this;
 	}
@@ -813,7 +845,7 @@ class CosmicAnimation{
 	 * @param {Function} callback
 	 * @param {Function} callbackErr
 	 */
-	public terminate(callback:Function, callbackErr?:Function):void{
+	public ends(callback:Function, callbackErr?:Function):void{
 		try{
 			// Suma el tiempo de duracion y retraso.
 			let time = (this.animation.delay + this.animation.duration);
@@ -843,9 +875,9 @@ class CosmicAnimation{
 	 * @author Brandon Anthony Olivares Amador
 	 * @returns {Promise<boolean|any>}
 	 */
-	public asyncTerminate():Promise<boolean|any>{
+	public asyncEnds():Promise<boolean|any>{
 		return new Promise((resolve, reject) => {
-			this.terminate(
+			this.ends(
 				() => resolve(true), 
 				(error:any) => reject(error)
 			);
@@ -855,10 +887,11 @@ class CosmicAnimation{
 	/**
 	 * Validaciones para los ajustes de la animacion.
 	 * @author Brandon Anthony Olivares Amador
+	 * @private
 	 */
 	#validateAnimationSettings():void{
 		// Las iteraciones deben ser un (numero entero), (pero puede ser Infinity)
-		if(!Number.isInteger(this.animation.iterationCount)){
+		if(!Number.isInteger(this.animation.iterationCount) && typeof this.animation.iterationCount !== "number"){
 			this.animation.iterationCount = 1;
 		}
 
@@ -873,8 +906,13 @@ class CosmicAnimation{
 		}
 	}
 
-	// Ejecuta las animaciones.
-	execute(){
+	/**
+	 * Ejecuta las animaciones.
+	 * @returns {CosmicAnimation}
+	 */
+	public execute():CosmicAnimation{
+		if(this.#animationExists) this.reset(false);
+
 		// Crea una etiqueta <style> para asignar la animacion.
 		var style:HTMLStyleElement = document.createElement('style');
 			style.setAttribute('type', 'text/css');
@@ -884,12 +922,6 @@ class CosmicAnimation{
 			// tomamos el primer <style>
 			style = document.getElementsByTagName('style')[0];
 		}
-		
-		// Toma un arreglo de transformaciones y lo convierte a "string".
-		const transformPropertiesToCSS = (part:string[]) => {
-			if(part.length > 0) return (`transform: ${part.join(' ')};`);
-			else return ("");
-		};
 
 		// Este objeto contendra varios objetos, las partes de la animacion.
 		/**
@@ -913,7 +945,7 @@ class CosmicAnimation{
 		let partsNine:string[] = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7', 'part8', 'part9'];
 		let percentageNine:string[] = ['0%', '12.5%', '25%', '37.5%', '50%', '62.5%', '75%', '87.5%', '100%'];
 
-		const typeAnimation:string = this.resources.type;
+		const typeAnimation:string = this.#resources.type;
 
 		// Extrae la cantidad de veces a iterar segun el tipo de animacion.
 		const iterarion:number = (
@@ -943,14 +975,14 @@ class CosmicAnimation{
 			let valueTransform:string[], valueNormal:string[];
 
 			if(typeAnimation === "default"){
-				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsTransform, part)?.value;
-				valueNormal = Object.getOwnPropertyDescriptor(this.resources.parts, part)?.value;
+				valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.#resources.parts, part)?.value;
 			}else if(typeAnimation === "nine"){
-				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsNineTransform, part)?.value;
-				valueNormal = Object.getOwnPropertyDescriptor(this.resources.partsNine, part)?.value;
+				valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsNineTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.#resources.partsNine, part)?.value;
 			}else{
-				valueTransform = Object.getOwnPropertyDescriptor(this.resources.partsThreeTransform, part)?.value;
-				valueNormal = Object.getOwnPropertyDescriptor(this.resources.partsThree, part)?.value;
+				valueTransform = Object.getOwnPropertyDescriptor(this.#resources.partsThreeTransform, part)?.value;
+				valueNormal = Object.getOwnPropertyDescriptor(this.#resources.partsThree, part)?.value;
 			}
 
 			// Verificamos que los (value) de las (part) de (resources) no se encuentren vacios.
@@ -997,7 +1029,7 @@ class CosmicAnimation{
 			return partsValues.join("");
 		};
 
-		console.log("ANIMATION_PARTS => ", ANIMATION_PARTS)
+		console.log(this.animation)
 
 		// En la hoja de estilos que inyectamos, ahora agregamos las configuraciones de nuestra animacion.
 		style.innerHTML += (`
@@ -1045,6 +1077,9 @@ class CosmicAnimation{
 			// Sino, solo aplica la animacion y ya.
 			this.target.classList.add(this.animation.name);
 		}
+
+		this.#animationExists = true;
+		return this;
 	}
 }
 
