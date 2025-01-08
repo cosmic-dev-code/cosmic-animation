@@ -2,17 +2,7 @@
   "name": "cosmic-animation",
   "version": "1.0.0",
   "description": "A library for creating fast and robust CSS animations with JavaScript. Minimalistic and effective.",
-  "keywords": [
-    "animation",
-    "animations",
-    "cosmic",
-    "astro",
-    "fantastic",
-    "javascript",
-    "js",
-    "css",
-    "minimalist"
-  ],
+  "keywords": ["animation", "animations", "cosmic", "astro", "fantastic", "javascript", "js", "css", "minimalist"],
   "author": {
     "name": "Brandon Anthony",
     "email": "brandonolivares.developer@gmail.com",
