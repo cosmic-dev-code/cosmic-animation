@@ -1030,8 +1030,6 @@ class CosmicAnimation{
 			return partsValues.join("");
 		};
 
-		console.log(this.animation)
-
 		// En la hoja de estilos que inyectamos, ahora agregamos las configuraciones de nuestra animacion.
 		style.innerHTML += (`
 			.${this.animation.name}{
