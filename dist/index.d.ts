@@ -91,6 +91,40 @@ declare class CosmicAnimation {
      */
     rotate(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
+     * Applies a rotation transformation to the element or elements around the X-axis.
+     * This method supports flexible input types for the rotation angle, such as numbers, strings, or arrays,
+     * allowing for different rotation values to be applied, including fractional rotations or different values
+     * for different parts of the element.
+     *
+     * @author Brandon Anthony Olivares Amador
+     * @example rotateX(0.5, 1) // Rotates the element by 0.5 degrees and 1 degree around the X-axis.
+     * @example rotateX(0.5, '1/5') // Rotates the element by 0.5 degrees and 1/5 of a full rotation around the X-axis.
+     * @example rotateX(0.5, ['1/3', '2/3']) // Rotates the element by 0.5 degrees and applies different rotation values: 1/3 and 2/3 of a full rotation.
+     *
+     * @param {number} [start=0] - The starting rotation value around the X-axis in degrees (default is 0°).
+     * @param {string|string[]|number} [end=0] - The ending rotation value around the X-axis in degrees.
+     * Can be a number, a string (e.g., '1/3'), or an array of strings (e.g., ['1/3', '2/3']) to apply different rotation values to different parts.
+     * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
+     */
+    rotateX(start?: number, end?: string | string[] | number): CosmicAnimation;
+    /**
+     * Applies a rotation transformation to the element or elements around the Y-axis.
+     * This method supports flexible input types for the rotation angle, such as numbers, strings, or arrays,
+     * allowing for different rotation values to be applied, including fractional rotations or different values
+     * for different parts of the element.
+     *
+     * @author Brandon Anthony Olivares Amador
+     * @example rotateY(0.5, 1) // Rotates the element by 0.5 degrees and 1 degree around the Y-axis.
+     * @example rotateY(0.5, '1/5') // Rotates the element by 0.5 degrees and 1/5 of a full rotation around the Y-axis.
+     * @example rotateY(0.5, ['1/3', '2/3']) // Rotates the element by 0.5 degrees and applies different rotation values: 1/3 and 2/3 of a full rotation.
+     *
+     * @param {number} [start=0] - The starting rotation value around the Y-axis in degrees (default is 0°).
+     * @param {string|string[]|number} [end=0] - The ending rotation value around the Y-axis in degrees.
+     * Can be a number, a string (e.g., '1/3'), or an array of strings (e.g., ['1/3', '2/3']) to apply different rotation values to different parts.
+     * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
+     */
+    rotateY(start?: number, end?: string | string[] | number): CosmicAnimation;
+    /**
      * Applies an opacity transformation to the element or elements.
      * The method allows for flexible input types, such as numbers, strings, or arrays,
      * enabling the opacity to be set to specific values, including fractional values or different opacity
@@ -608,6 +642,54 @@ declare class CosmicAnimation {
      * element.palpite(3000, 500); // The element will pulse with a delay of 500ms before starting.
      */
     palpite(duration?: number, delay?: number): CosmicAnimation;
+    /**
+     * Applies a continuous rotation animation along the Y-axis, making the element
+     * flip horizontally in 3D space. The animation alternates direction every cycle
+     * (forward/backward) to create a smooth and natural flipping effect.
+     *
+     * @author Brandon Anthony Olivares Amador
+     * @param {number} [duration=1700] - Duration (in milliseconds) of one full rotation.
+     *     Default is 1700ms.
+     * @returns {CosmicAnimation}
+     *
+     * @example
+     * element.spinY();
+     * element.spinY(2500); // Slower flip
+     */
+    spinY(duration?: number): CosmicAnimation;
+    /**
+     * Applies a continuous rotation animation along the X-axis, making the element
+     * flip vertically in 3D space. The animation alternates direction automatically
+     * for a smooth forward/backward motion.
+     *
+     * @author Brandon Anthony Olivares Amador
+     * @param {number} [duration=1700] - Duration (in milliseconds) of one full rotation.
+     * @returns {CosmicAnimation}
+     *
+     * @example
+     * element.spinX();
+     * element.spinX(2000); // Slightly slower vertical spin
+     */
+    spinX(duration?: number): CosmicAnimation;
+    /**
+     * Applies a continuous 2D rotation, spinning the element either clockwise or
+     * counterclockwise depending on the selected direction. The rotation loops forever
+     * without reversing direction (unlike spinX/spinY).
+     *
+     * Useful for icons, loaders, or decorative spinning elements.
+     *
+     * @author Brandon Anthony Olivares Amador
+     * @param {"right" | "left"} [direction="right"] - Rotation direction.
+     *     "right" = clockwise, "left" = counterclockwise.
+     * @param {number} [duration=1700] - Duration (in milliseconds) of one full rotation.
+     * @returns {CosmicAnimation}
+     *
+     * @example
+     * element.spin(); // Spins to the right
+     * element.spin("left"); // Spins to the left
+     * element.spin("right", 2500); // Slower clockwise spin
+     */
+    spin(direction?: string, duration?: number): this;
     /**
      * Resets all animations applied to the `CosmicAnimation` object, restoring the element's
      * state to its original configuration. Optionally, the element's inner content can be restored

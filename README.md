@@ -478,6 +478,19 @@ The parameters received are **(duration)** and **(delay)**.
 
     // Alpita indefinitely increases and decreases its scale slightly.
     cosmicDiv.palpite(3000, 0);
+
+    /**
+     * Spin.
+    */
+
+   // Slower clockwise spin.
+   cosmicDiv.spin("right", 2500);
+
+   // Slightly slower vertical spin.
+   cosmicDiv.spinX(2000);
+
+   // Applies a continuous rotation animation along the Y-axis.
+   cosmicDiv.spinY(2500);
 ```
 
 # When (ending) and (restarting) animation
