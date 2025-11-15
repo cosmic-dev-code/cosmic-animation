@@ -1,19 +1,18 @@
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _CosmicAnimation_instances, _a, _CosmicAnimation_assignDefaultValues, _CosmicAnimation_resources, _CosmicAnimation_validations, _CosmicAnimation_originalContent, _CosmicAnimation_createAutomaticName, _CosmicAnimation_error, _CosmicAnimation_warning, _CosmicAnimation_addResources, _CosmicAnimation_lettersToElements, _CosmicAnimation_fadeOut, _CosmicAnimation_validateAnimationSettings;
+import { CosmicAnimateSettings, CosmicAnimateViewport } from "./interfaces/animation";
 /**
  * @class CosmicAnimation
  */
-class CosmicAnimation {
+declare class CosmicAnimation {
+    #private;
+    target: HTMLElement;
+    /**
+     * Common settings for a CSS animation.
+     */
+    animation: CosmicAnimateSettings;
+    /**
+     * Configure whether you want the animation to run when the element is visible in the viewport.
+     */
+    observeViewport: CosmicAnimateViewport;
     /**
      * The constructor can return a CosmicAnimation object or an array of CosmicAnimation objects.
      *
@@ -22,110 +21,7 @@ class CosmicAnimation {
      * @param {string|string[]} name - A name or an array of animation names.
      * @return {CosmicAnimation|CosmicAnimation[]} A single CosmicAnimation object or an array of CosmicAnimation objects.
      */
-    constructor(selector, name) {
-        _CosmicAnimation_instances.add(this);
-        // By default, it creates a DIV element.
-        this.target = document.createElement('div');
-        /**
-         * Here you can manage the stages of the animation (according to the user's preference).
-         * @private
-         */
-        // @ts-ignore
-        _CosmicAnimation_resources.set(this, {});
-        /**
-         * @private
-         */
-        _CosmicAnimation_validations.set(this, {
-            numeric: /^[0-9]$/,
-            empty: function (data) {
-                return (data === undefined ||
-                    data === null ||
-                    Number.isNaN(data) ||
-                    data === "");
-            }
-        });
-        /**
-         * If the user wishes to reset the item, we have a backup of the content.
-         * @private
-         */
-        _CosmicAnimation_originalContent.set(this, ``);
-        /**
-         * Common settings for a CSS animation.
-         */
-        this.animation = {
-            name: 'name',
-            delay: 0,
-            duration: 1500,
-            iterationCount: 1,
-            direction: 'normal',
-            timingFunction: 'linear',
-            fillMode: 'forwards'
-        };
-        /**
-         * Configure whether you want the animation to run when the element is visible in the viewport.
-         */
-        this.observeViewport = {
-            enabled: false,
-            infinite: false // Indica si solo se ejecuta una vez o cada vez que entre y salga del viewport.
-        };
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_assignDefaultValues).call(this);
-        if (!name)
-            name = __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_createAutomaticName).call(this);
-        if (__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(selector)) {
-            __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, 'The selector (' + selector + ') is not valid.');
-            // First Array.
-        }
-        else if (Array.isArray(selector)) {
-            const arrCosmicsElements = new Array();
-            // Second Array.
-            if (Array.isArray(name)) {
-                // Check if we received an array of animation names[] for each selector[].
-                for (let i in selector) {
-                    // Selector and Animation
-                    const selectorName = selector[i], animationName = name[i];
-                    if (!__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(selectorName) && !__classPrivateFieldGet(this, _CosmicAnimation_validations, "f").empty(animationName)) {
-                        // Associate each Name with its Animation.
-                        arrCosmicsElements.push(new _a(selectorName, animationName));
-                    }
-                    else {
-                        // Automatic animation name.
-                        arrCosmicsElements.push(new _a(animationName));
-                    }
-                }
-                // Only the first array was provided (automatic animation names).
-            }
-            else {
-                for (let i in selector)
-                    arrCosmicsElements.push(new _a(selector[i]));
-            }
-            // @ts-ignore
-            // Returns an array of CosmicAnimation objects.
-            return arrCosmicsElements;
-        }
-        else {
-            const select = selector;
-            // It doesn't make sense to have a selector and multiple animation names.
-            if (Array.isArray(name))
-                name = name[0];
-            // Check if the passed selector exists in the DOM.
-            try {
-                const element = document.querySelector(select);
-                if (!element) {
-                    __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_warning).call(this, "The selector (" + select + ") does not exist in the DOM.");
-                    // Create the CosmicAnimation object.
-                }
-                else {
-                    this.target = element;
-                    this.animation.name = name;
-                }
-            }
-            catch (error) {
-                __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, `Error when extracting the selector (${selector})`);
-            }
-        }
-    }
-    // Transformations.
-    // As you can see, transformation properties are stored elsewhere.
+    constructor(selector?: string | string[], name?: string | string[]);
     /**
      * Applies a scale transformation to the element or elements. The method can handle
      * different input types for the scaling factor, including numbers, strings, and arrays.
@@ -142,10 +38,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different scaling factors to different parts.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for chaining.
      */
-    scale(start = 1, end = 1) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, `scale(${start})`, `scale(${end})`, end, true);
-        return this;
-    }
+    scale(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
      * Applies a vertical translation (along the Y-axis) transformation to the element or elements.
      * Similar to the `scale` method, it allows for flexible inputs such as numbers, strings, or arrays
@@ -162,10 +55,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different translation values to different parts.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    translateY(start = 0, end = 0) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('translateY(' + start + 'px)'), ('translateY(' + end + 'px)'), end, true);
-        return this;
-    }
+    translateY(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
      * Applies a horizontal translation (along the X-axis) transformation to the element or elements.
      * Like the `scale` and `translateY` methods, this function supports flexible input types for the
@@ -182,10 +72,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different translation values to different parts.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    translateX(start = 0, end = 0) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('translateX(' + start + 'px)'), ('translateX(' + end + 'px)'), end, true);
-        return this;
-    }
+    translateX(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
      * Applies a rotation transformation to the element or elements around the Z-axis.
      * This method supports flexible input types for the rotation angle, such as numbers, strings, or arrays,
@@ -202,10 +89,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different rotation values to different parts.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    rotate(start = 0, end = 0) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('rotate(' + start + 'deg)'), ('rotate(' + end + 'deg)'), end, true);
-        return this;
-    }
+    rotate(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
      * Applies an opacity transformation to the element or elements.
      * The method allows for flexible input types, such as numbers, strings, or arrays,
@@ -222,10 +106,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different opacity values to different parts of the element.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    opacity(start = 0, end = 1) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('opacity: ' + start + ';'), ('opacity: ' + end + ';'), end);
-        return this;
-    }
+    opacity(start?: number, end?: string | string[] | number): CosmicAnimation;
     /**
      * Applies a background color transformation to the element or elements.
      * This method allows you to set a starting and ending background color, with flexibility for fractional or
@@ -241,10 +122,7 @@ class CosmicAnimation {
      * or a color value represented as a fraction of a color range, or an array of fractional color values.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    bgColor(start = "red", end = "red") {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('background-color: ' + start + ';'), ('background-color: ' + end + ';'), end);
-        return this;
-    }
+    bgColor(start?: string, end?: string): CosmicAnimation;
     /**
      * Applies a text color transformation to the element or elements.
      * This method allows you to set a starting and ending text color, with flexibility for fractional or
@@ -260,10 +138,7 @@ class CosmicAnimation {
      * or a color value represented as a fraction of a color range, or an array of fractional color values.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    color(start = "black", end = "black") {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('color: ' + start + ';'), ('color: ' + end + ';'), end);
-        return this;
-    }
+    color(start?: string, end?: string): CosmicAnimation;
     /**
      * Applies a width transformation to the element or elements.
      * This method allows you to set a starting and ending width, with flexibility for fractional or
@@ -279,10 +154,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different widths to different parts of the element.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    width(start = 300, end = 300) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('width: ' + start + 'px;'), ('width: ' + end + 'px;'), end);
-        return this;
-    }
+    width(start?: number, end?: number | string | string[]): CosmicAnimation;
     /**
      * Applies a height transformation to the element or elements.
      * This method allows you to set a starting and ending height, with flexibility for fractional or
@@ -298,10 +170,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different heights to different parts of the element.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    height(start = 300, end = 300) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('height: ' + start + 'px;'), ('height: ' + end + 'px;'), end);
-        return this;
-    }
+    height(start?: number, end?: number | string | string[]): CosmicAnimation;
     /**
      * Applies a padding transformation to the element or elements.
      * This method allows you to set a starting and ending padding, with flexibility for fractional or
@@ -317,10 +186,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different paddings to different parts of the element.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    padding(start = 300, end = 300) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('padding: ' + start + 'px;'), ('padding: ' + end + 'px;'), end);
-        return this;
-    }
+    padding(start?: number, end?: number | string | string[]): CosmicAnimation;
     /**
      * Applies a margin transformation to the element or elements.
      * This method allows you to set a starting and ending margin, with flexibility for fractional or
@@ -336,10 +202,7 @@ class CosmicAnimation {
      * or an array of strings (e.g., ['1/3', '2/3']) to apply different margins to different parts of the element.
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    margin(start = 300, end = 300) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, ('margin: ' + start + 'px;'), ('margin: ' + end + 'px;'), end);
-        return this;
-    }
+    margin(start?: number, end?: number | string | string[]): CosmicAnimation;
     /**
      * Adds a custom CSS property transformation to the element or elements.
      * This method allows you to define a starting and ending value for any CSS property, offering flexibility
@@ -360,11 +223,7 @@ class CosmicAnimation {
      * a string representing a fraction (e.g., `'1/5'`), or an array of strings (e.g., `['2/5', '3/5', '4/5']`).
      * @returns {CosmicAnimation} The instance of the `CosmicAnimation` class for method chaining.
      */
-    addProperty(cssStart = "", cssEnd = "") {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, cssStart, cssEnd, cssEnd);
-        return this;
-    }
-    ;
+    addProperty(cssStart?: string, cssEnd?: string): CosmicAnimation;
     /**
      * Animates an element to appear from a specified direction (e.g., top, right, bottom, or left)
      * by changing its opacity and position on the screen. The animation includes a timing function
@@ -396,31 +255,7 @@ class CosmicAnimation {
      * - The element's translation depends on the `mode` specified, either sliding in from the top, right,
      *   bottom, or left based on the window's width.
      */
-    fromWindowTo(mode = "right", duration = 2000, delay = 0) {
-        // Set the animation's delay, duration, and timing function
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-in-out';
-        // Set opacity at different stages of the animation for smooth fade-in effect
-        this.opacity(0, 1) // Fade in from 0 to 1
-            .opacity(0.3, '2/5') // Set opacity at 2/5
-            .opacity(0.5, '3/5') // Set opacity at 3/5
-            .opacity(0.7, '4/5'); // Set opacity at 4/5
-        // Apply the translation effect based on the specified mode
-        if (mode === "top") {
-            this.translateY(window.innerWidth, 0); // Slide in from the top (Y-axis)
-        }
-        else if (mode === "right") {
-            this.translateX(-window.innerWidth, 0); // Slide in from the right (X-axis)
-        }
-        else if (mode === "bottom") {
-            this.translateY(-window.innerWidth, 0); // Slide in from the bottom (Y-axis)
-        }
-        else {
-            this.translateX(window.innerWidth, 0); // Slide in from the left (X-axis)
-        }
-        return this; // Return the CosmicAnimation instance to allow method chaining
-    }
+    fromWindowTo(mode?: string, duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the disappearance of the text in an element letter by letter.
      * This method applies a fade-out effect to each individual letter, allowing for a staggered
@@ -443,13 +278,7 @@ class CosmicAnimation {
      * to 0 over the specified time. The `spaceInLetters` parameter adjusts the margin between each letter as
      * they fade out.
      */
-    fadeOutLetters(spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            spaceInLetters,
-            time
-        });
-        return this;
-    }
+    fadeOutLetters(spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Animates the appearance of the text in an element letter by letter.
      * This method applies an appearance (fade-in) effect to each individual letter, allowing for a staggered
@@ -471,14 +300,7 @@ class CosmicAnimation {
      * from 0 to 1 over the specified time. The `spaceInLetters` parameter adjusts the margin between each letter as
      * they appear.
      */
-    appearLetters(spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            spaceInLetters,
-            time,
-            appear: true
-        });
-        return this;
-    }
+    appearLetters(spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Animates the disappearance of the text in an element letter by letter towards a specified direction.
      * This method animates each letter fading out, while also applying a directional movement to each letter
@@ -509,14 +331,7 @@ class CosmicAnimation {
      * specified direction while fading out their opacity. The `spaceInLetters` parameter controls the spacing between
      * letters, and the `time` parameter determines the speed of the effect.
      */
-    fadeOutLettersTo(mode = "top", spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            mode,
-            spaceInLetters,
-            time
-        });
-        return this;
-    }
+    fadeOutLettersTo(mode?: string, spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Animates the appearance of the text in an element letter by letter towards a specified direction.
      * This method animates each letter appearing individually, while also applying a directional movement to each letter
@@ -547,15 +362,7 @@ class CosmicAnimation {
      * specified direction while increasing their opacity. The `spaceInLetters` parameter controls the spacing between
      * letters, and the `time` parameter determines the speed of the effect.
      */
-    appearLettersTo(mode = "top", spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            mode,
-            spaceInLetters,
-            time,
-            appear: true
-        });
-        return this;
-    }
+    appearLettersTo(mode?: string, spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Disappears the text of the element letter by letter towards a random direction.
      * This effect randomly animates the disappearance of each letter from the text content
@@ -574,14 +381,7 @@ class CosmicAnimation {
      * element.fadeOutLettersRandom(10, 150); // Letters disappear with 10px space and 150ms delay between each letter.
      * element.fadeOutLettersRandom(5); // Default 6px space and 100ms delay between letters.
      */
-    fadeOutLettersRandom(spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            spaceInLetters,
-            time,
-            random: true
-        });
-        return this;
-    }
+    fadeOutLettersRandom(spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Makes the text of the element appear letter by letter from a random direction.
      * This effect randomly animates each letter's appearance, making them fade in from various directions
@@ -600,15 +400,7 @@ class CosmicAnimation {
      * element.appearLettersRandom(10, 150); // Letters appear with 10px space and 150ms delay between each letter.
      * element.appearLettersRandom(); // Default space of 6px and 100ms delay between letters.
      */
-    appearLettersRandom(spaceInLetters = 6, time = 100) {
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_fadeOut).call(this, {
-            spaceInLetters,
-            time,
-            random: true,
-            appear: true
-        });
-        return this;
-    }
+    appearLettersRandom(spaceInLetters?: number, time?: number): CosmicAnimation;
     /**
      * Animates the appearance of the element by gradually fading in its opacity from 0 to 1.
      * This method allows for customizable duration and delay, and the element will use an "ease-out" timing function
@@ -626,13 +418,7 @@ class CosmicAnimation {
      * element.appear(1500, 500); // The element will fade in over 1.5 seconds with a 500ms delay.
      * element.appear(); // Default duration of 1300ms and no delay.
      */
-    appear(duration = 1300, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-out';
-        this.opacity(0, 1);
-        return this;
-    }
+    appear(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the element to appear from a specific direction with a fading effect.
      * The element will gradually fade in and move from the specified direction (top, bottom, left, or right).
@@ -653,25 +439,7 @@ class CosmicAnimation {
      * element.appearTo('left', 1500, 500); // The element will fade in and slide from the left with a 500ms delay.
      * element.appearTo(); // The element will fade in and slide up from the bottom by default.
      */
-    appearTo(direction = 'bottom', duration = 1300, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-in-out';
-        this.opacity(0, '1/5').opacity(0.1, '2/5').opacity(0.2, '3/5')
-            .opacity(0.3, '4/5').opacity(1, '5/5');
-        // Animate according to the specified direction
-        if (direction === 'top')
-            this.translateY(300, 0);
-        else if (direction === 'bottom')
-            this.translateY(-300, 0);
-        else if (direction === 'right')
-            this.translateX(-300, 0);
-        else if (direction === 'left')
-            this.translateX(300, 0);
-        else
-            this.translateY(300, 0);
-        return this;
-    }
+    appearTo(direction?: string, duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the element to fade out by gradually reducing its opacity from 1 to 0.
      * The element will slowly disappear over the specified duration, using an "ease-out" timing function for a smooth transition.
@@ -688,13 +456,7 @@ class CosmicAnimation {
      * element.fadeOut(2000); // The element will fade out over 2 seconds.
      * element.fadeOut(1500, 500); // The element will fade out over 1.5 seconds, with a 500ms delay.
      */
-    fadeOut(duration = 1300, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-out';
-        this.opacity(1, 0);
-        return this;
-    }
+    fadeOut(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the element to fade in by gradually increasing its opacity from 0 to 1.
      * This is a shorthand method that uses the `appear` method internally to create the fade-in effect.
@@ -712,9 +474,7 @@ class CosmicAnimation {
      * element.fadeIn(2000); // The element will fade in over 2 seconds.
      * element.fadeIn(1500, 500); // The element will fade in over 1.5 seconds, with a 500ms delay.
      */
-    fadeIn(duration = 1300, delay = 0) {
-        return this.appear(duration, delay);
-    }
+    fadeIn(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the element to fade out while translating it in a specified direction.
      * The element's opacity gradually decreases from 1 to 0, while it moves towards the specified direction (top, bottom, left, or right).
@@ -734,25 +494,7 @@ class CosmicAnimation {
      * element.fadeOutTo('right', 2000); // The element will fade out and move to the right over 2 seconds.
      * element.fadeOutTo('left', 1500, 500); // The element will fade out and move to the left over 1.5 seconds, with a 500ms delay.
      */
-    fadeOutTo(direction = 'bottom', duration = 1300, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-in';
-        this.opacity(1, '1/5').opacity(0.3, '2/5').opacity(0.2, '3/5')
-            .opacity(0.1, '4/5').opacity(0, '5/5');
-        // De acuerdo a la direccion, se crea la animacion.
-        if (direction === 'top')
-            this.translateY(0, -300);
-        else if (direction === 'bottom')
-            this.translateY(0, 300);
-        else if (direction === 'right')
-            this.translateX(0, 300);
-        else if (direction === 'left')
-            this.translateX(0, -300);
-        else
-            this.translateY(0, -300);
-        return this;
-    }
+    fadeOutTo(direction?: string, duration?: number, delay?: number): CosmicAnimation;
     /**
      * Makes the element appear and fade out in a sequence of steps.
      * The element first moves vertically (using `translateY`) and its opacity changes in a series of steps,
@@ -771,14 +513,7 @@ class CosmicAnimation {
      * element.appearAndFadeOut(2000); // The element will take 2 seconds to appear and fade out.
      * element.appearAndFadeOut(1500, 500); // The element will take 1.5 seconds to appear and fade out, with a 500ms delay.
      */
-    appearAndFadeOut(duration = 1300, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-out';
-        this.translateY(120, "1/5").translateY(0, ["2/5", "3/5", "4/5"]).translateY(120, "5/5")
-            .opacity(0, "1/5").opacity(1, ["2/5", "3/5", "4/5"]).opacity(0, "5/5");
-        return this;
-    }
+    appearAndFadeOut(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Animates the element to gradually scale up and fade in.
      * The element will first be scaled down to 0 and then scale up to its normal size (1), while its opacity
@@ -795,13 +530,7 @@ class CosmicAnimation {
      * element.increment(3000); // The element will take 3 seconds to scale and fade in.
      * element.increment(2500, 500); // The element will take 2.5 seconds to animate, with a 500ms delay.
      */
-    increment(duration = 2000, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.animation.timingFunction = 'ease-out-in';
-        this.scale(0, 1).opacity(0, 1);
-        return this;
-    }
+    increment(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Creates a pulsing animation where the element scales up and down while gradually becoming more opaque.
      * The element will scale from 0 to its normal size, then pulse to 1.2 times its size before returning to normal size.
@@ -819,13 +548,7 @@ class CosmicAnimation {
      * element.incrementPulse(2500); // The element will pulse over 2.5 seconds.
      * element.incrementPulse(2000, 500); // The element will pulse with a 500ms delay.
      */
-    incrementPulse(duration = 2000, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        this.scale(0, '1/5').scale(1, ['2/5', '3/5']).scale(1.2, '4/5').scale(1, '5/5')
-            .opacity(0, '1/5').opacity(0.5, '2/5').opacity(1, '3/5');
-        return this;
-    }
+    incrementPulse(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Creates an animation where the element transitions into a circular shape while moving and fading.
      * The element will move vertically (either up or down depending on the direction),
@@ -848,27 +571,7 @@ class CosmicAnimation {
      * element.circleTo('top'); // The element will move down from above and animate as a circle.
      * element.circleTo('bottom', 3000, 1000); // The element will move up from below with a 3-second duration and 1-second delay.
      */
-    circleTo(direction = 'bottom', duration = 2500, delay = 3000) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        // Set movement direction based on the input (top or bottom)
-        if (direction === 'bottom') {
-            this.translateY(-window.innerHeight, '1/5')
-                .translateY((-window.innerHeight / 2), '2/5')
-                .translateY((-window.innerHeight / 3), '3/5');
-        }
-        else {
-            this.translateY(window.innerHeight, '1/5')
-                .translateY((window.innerHeight / 2), '2/5')
-                .translateY((window.innerHeight / 3), '3/5');
-        }
-        // Finalize translation, opacity, border-radius, and scaling
-        this.translateY(0, ['4/5', '5/5'])
-            .opacity(0, 1)
-            .addProperty('border-radius: 100%;', 'border-radius: 0;')
-            .scale(0.1, ['1/5', '2/5', '3/5', '4/5']).scale(1, '5/5');
-        return this;
-    }
+    circleTo(direction?: string, duration?: number, delay?: number): CosmicAnimation;
     /**
      * Creates a "pulse" animation on the element where it scales up and down in size over a set duration.
      * The element starts at its normal size, gradually scales up, and then returns to its original size.
@@ -886,15 +589,7 @@ class CosmicAnimation {
      * element.pulse(1500); // The element will pulse for 1.5 seconds.
      * element.pulse(1000, 500); // The element will pulse for 1 second, but with a 500ms delay before starting.
      */
-    pulse(duration = 1000, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        // The scaling sequence to create the "pulse" effect.
-        this.scale(1, 1) // Starts at normal size.
-            .scale(1.1, ['2/5', '4/5']) // Scales up to 1.1x at the middle of the animation.
-            .scale(1.3, '3/5'); // Scales up further to 1.3x before returning to normal.
-        return this;
-    }
+    pulse(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Creates a "palpite" (heartbeat-like) animation on the element where it pulses
      * by scaling it down and then scaling it up in a rhythmic manner.
@@ -912,14 +607,7 @@ class CosmicAnimation {
      * element.palpite(4000); // The element will pulse over 4 seconds.
      * element.palpite(3000, 500); // The element will pulse with a delay of 500ms before starting.
      */
-    palpite(duration = 3000, delay = 0) {
-        this.animation.delay = delay;
-        this.animation.duration = duration;
-        // Create the rhythmic scale effect, like a heartbeat.
-        this.scale(0.8, ['1/5', '3/5', '5/5']) // Scales down to 0.8x at different stages.
-            .scale(1.1, ['2/5', '4/5']); // Scales up to 1.1x at intermediate stages.
-        return this;
-    }
+    palpite(duration?: number, delay?: number): CosmicAnimation;
     /**
      * Resets all animations applied to the `CosmicAnimation` object, restoring the element's
      * state to its original configuration. Optionally, the element's inner content can be restored
@@ -938,26 +626,7 @@ class CosmicAnimation {
      * element.reset(); // Resets all animations and restores the content of the element to its original state.
      * element.reset(false); // Resets the animations, but does not restore the content.
      */
-    reset(restartContent = true) {
-        const style = document.getElementsByTagName('style')[0];
-        // Check if a style element exists and remove animations from it.
-        if (style) {
-            const comment = `/* end: ${this.animation.name} */`, animationName = `.${this.animation.name}`;
-            // Split the style content to remove the animation part.
-            const partOne = style.innerHTML.slice(0, style.innerHTML.indexOf(animationName));
-            const partTwo = style.innerHTML.slice((style.innerHTML.indexOf(comment) + comment.length), style.innerHTML.length);
-            // Reassemble the style content without the animation.
-            style.innerHTML = (partOne + partTwo);
-        }
-        // Restore the default values for the animation.
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_assignDefaultValues).call(this);
-        // Optionally restore the original content of the element.
-        if (restartContent) {
-            if (__classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f"))
-                this.target.innerHTML = __classPrivateFieldGet(this, _CosmicAnimation_originalContent, "f");
-        }
-        return this;
-    }
+    reset(restartContent?: boolean): CosmicAnimation;
     /**
      * Executes a specific action after the animation has completed. This method allows
      * you to define a callback that will be executed once the animation finishes.
@@ -981,28 +650,7 @@ class CosmicAnimation {
      *     console.error("Error during animation", error);
      * });
      */
-    ends(callback, callbackErr) {
-        try {
-            // Calculate the total time considering delay and duration.
-            let time = (this.animation.delay + this.animation.duration);
-            // Check if the animation has a finite number of iterations.
-            const isFinite = (Number.isFinite(this.animation.iterationCount) &&
-                String(this.animation.iterationCount) !== "infinite");
-            // If the animation has a finite number of iterations, multiply the total time.
-            if (Number.isInteger(this.animation.iterationCount) && isFinite) {
-                time = (time * this.animation.iterationCount);
-            }
-            // Execute the callback after the animation completes, if valid.
-            if (isFinite && typeof callback === "function") {
-                setTimeout(() => callback(), time);
-            }
-        }
-        catch (error) {
-            // If an error occurs, execute callbackErr, if defined.
-            if (typeof callbackErr === "function")
-                callbackErr(error);
-        }
-    }
+    ends(callback: Function, callbackErr?: Function): void;
     /**
      * Executes actions asynchronously when the animation finishes. This method returns
      * a promise that resolves when the animation ends successfully and rejects if an error occurs.
@@ -1022,11 +670,7 @@ class CosmicAnimation {
      *         console.error("Error during animation", error);
      *     });
      */
-    asyncEnds() {
-        return new Promise((resolve, reject) => {
-            this.ends(() => resolve(true), (error) => reject(error));
-        });
-    }
+    asyncEnds(): Promise<boolean | any>;
     /**
      * Executes the animation by injecting the necessary CSS styles into the document.
      * It prepares the animation, sets its keyframes, and appends a `<style>` element to the DOM.
@@ -1042,381 +686,6 @@ class CosmicAnimation {
      * const animation = new CosmicAnimation(targetElement);
      * animation.execute(); // Executes the animation on the target element.
      */
-    execute() {
-        var _b, _c, _d, _e, _f, _g;
-        // Create a <style> tag to assign the animation.
-        var style = document.createElement('style');
-        style.setAttribute('type', 'text/css');
-        // If there's already a <style> in the DOM, use the first one.
-        if (document.getElementsByTagName('style')[0] !== undefined) {
-            style = document.getElementsByTagName('style')[0];
-        }
-        // This object will contain the animation parts.
-        const ANIMATION_PARTS = {};
-        // Representation of the animation parts (3/3, 5/5, 9/9).
-        let partsThree = ['part1', 'part2', 'part3'];
-        let percentageThree = ['0%', '50%', '100%'];
-        let partsFive = ['part1', 'part2', 'part3', 'part4', 'part5'];
-        let percentageFive = ['0%', '25%', '50%', '75%', '100%'];
-        let partsNine = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7', 'part8', 'part9'];
-        let percentageNine = ['0%', '12.5%', '25%', '37.5%', '50%', '62.5%', '75%', '87.5%', '100%'];
-        const typeAnimation = __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type;
-        // Get the iteration count based on the animation type.
-        const iteration = (typeAnimation === "default" ? partsFive.length : (typeAnimation === "nine" ? partsNine.length : partsThree.length)) - 1;
-        for (let i = 0; i <= iteration; i++) {
-            let part, percentage;
-            // Check which animation type is being used.
-            if (typeAnimation === "default") {
-                part = partsFive[i], percentage = percentageFive[i];
-            }
-            else if (typeAnimation === "nine") {
-                part = partsNine[i], percentage = percentageNine[i];
-            }
-            else {
-                part = partsThree[i], percentage = percentageThree[i];
-            }
-            // Get the properties for the current part.
-            let valueTransform, valueNormal;
-            if (typeAnimation === "default") {
-                valueTransform = (_b = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform, part)) === null || _b === void 0 ? void 0 : _b.value;
-                valueNormal = (_c = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts, part)) === null || _c === void 0 ? void 0 : _c.value;
-            }
-            else if (typeAnimation === "nine") {
-                valueTransform = (_d = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform, part)) === null || _d === void 0 ? void 0 : _d.value;
-                valueNormal = (_e = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine, part)) === null || _e === void 0 ? void 0 : _e.value;
-            }
-            else {
-                valueTransform = (_f = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform, part)) === null || _f === void 0 ? void 0 : _f.value;
-                valueNormal = (_g = Object.getOwnPropertyDescriptor(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree, part)) === null || _g === void 0 ? void 0 : _g.value;
-            }
-            // If there are valid values, add them to the animation parts.
-            if (valueTransform.length > 0 || (valueNormal.length > 0)) {
-                Object.defineProperty(ANIMATION_PARTS, part, {
-                    value: (`
-						${percentage} {
-							${valueTransform.length > 0 ? (`
-									transform: ${valueTransform.join(' ')};
-								`) : ``}
-							${valueNormal.length > 0 ? (`
-									${valueNormal.join('')}
-								`) : ""}
-						}
-					`),
-                    writable: true,
-                    enumerable: true
-                });
-            }
-        }
-        __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_validateAnimationSettings).call(this);
-        // Get the percentages and properties as a string.
-        const getPercentages = () => {
-            // @ts-ignore
-            const partsValues = Object.values(ANIMATION_PARTS);
-            // @ts-ignore
-            window.ANIMATION_PARTS = ANIMATION_PARTS;
-            return partsValues.join("");
-        };
-        // Add the animation to the style tag with the keyframes and properties.
-        style.innerHTML += (`
-			.${this.animation.name} {
-				animation-name: ${this.animation.name};
-				animation-duration: ${this.animation.duration}ms;
-				animation-delay: ${this.animation.delay}ms;
-				animation-iteration-count: ${Number.isFinite(this.animation.iterationCount) ? this.animation.iterationCount : 'infinite'};
-				animation-direction: ${this.animation.direction};
-				animation-timing-function: ${this.animation.timingFunction};
-				animation-fill-mode: ${this.animation.fillMode};
-			}
-			@keyframes ${this.animation.name} {
-				${getPercentages()}
-			}/* end: ${this.animation.name} */
-		`);
-        // Append the style element to the DOM.
-        document.getElementsByTagName('body')[0].appendChild(style);
-        // Check if viewport observation is enabled.
-        if (this.observeViewport.enabled) {
-            const observeTarget = new IntersectionObserver(elements => {
-                if (elements[0].isIntersecting) {
-                    this.target.classList.add(this.animation.name);
-                }
-                else if (this.observeViewport.infinite) {
-                    this.target.classList.remove(this.animation.name);
-                }
-            });
-            if (this.target.parentElement) {
-                observeTarget.observe(this.target.parentElement);
-            }
-        }
-        else {
-            // If no viewport observation, apply the animation directly.
-            this.target.classList.add(this.animation.name);
-        }
-        return this;
-    }
+    execute(): CosmicAnimation;
 }
-_a = CosmicAnimation, _CosmicAnimation_resources = new WeakMap(), _CosmicAnimation_validations = new WeakMap(), _CosmicAnimation_originalContent = new WeakMap(), _CosmicAnimation_instances = new WeakSet(), _CosmicAnimation_assignDefaultValues = function _CosmicAnimation_assignDefaultValues() {
-    // @ts-ignore
-    this.target.classList = "";
-    this.animation.name = ("cosmic-animation-" + Math.round(Math.random() * 300));
-    __classPrivateFieldSet(this, _CosmicAnimation_resources, {
-        type: 'default',
-        // 3/3
-        partsThree: {
-            part1: [], part2: [], part3: []
-        },
-        partsThreeTransform: {
-            part1: [], part2: [], part3: []
-        },
-        // 5/5
-        parts: {
-            part1: [], part2: [],
-            part3: [], part4: [],
-            part5: []
-        },
-        partsTransform: {
-            part1: [], part2: [],
-            part3: [], part4: [],
-            part5: []
-        },
-        // 9/9
-        partsNine: {
-            part1: [], part2: [], part3: [], part4: [],
-            part5: [], part6: [], part7: [], part8: [],
-            part9: []
-        },
-        partsNineTransform: {
-            part1: [], part2: [], part3: [], part4: [],
-            part5: [], part6: [], part7: [], part8: [],
-            part9: []
-        }
-    }, "f");
-}, _CosmicAnimation_createAutomaticName = function _CosmicAnimation_createAutomaticName() {
-    return ("cosmic-animation-" + Math.round(Math.random() * 300));
-}, _CosmicAnimation_error = function _CosmicAnimation_error(args) {
-    if (arguments.length > 1) {
-        for (let arg of arguments)
-            __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, arg);
-    }
-    else {
-        console.log(`%cCosmicAnimation: ${arguments[0]}`, `
-				display: block;
-				width: 100%;
-				padding: 10px;
-				color: #641E16;
-				background-color: #F5B7B1;
-				font-size: 14px;
-				letter-spacing: 3px;
-			`);
-    }
-}, _CosmicAnimation_warning = function _CosmicAnimation_warning(args) {
-    if (arguments.length > 1) {
-        for (let arg of arguments)
-            __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_warning).call(this, arg);
-    }
-    else {
-        console.log(`%cCosmicAnimation: ${arguments[0]}`, `
-				display: block;
-				width: 100%;
-				padding: 10px;
-				color: #7E5109;
-				background-color: #F1C40F;
-				font-size: 14px;
-				letter-spacing: 3px;
-			`);
-    }
-}, _CosmicAnimation_addResources = function _CosmicAnimation_addResources(start, end, parts, isTransform) {
-    /**
-     * If `parts` is a number, it means we received:
-     *     @example function(start, parts)
-     *     @example function(1, 1)
-     * This by default means that (start) and (end) will have the properties declared to be saved in the default array.
-     */
-    if (typeof parts === "number") {
-        if (isTransform) {
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform.part1.push(start);
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform.part5.push(end);
-        }
-        else {
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts.part1.push(start);
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts.part5.push(end);
-        }
-        return;
-    }
-    /**
-     * If `parts` is a string, it means the user entered:
-     *     @example function(start, parts)
-     *     @example function(1, '1/3')
-     * This means (start) contains the property to be saved in the corresponding array according to `parts`. (end) is not needed.
-     */
-    if (typeof parts === "string") {
-        let firstNumber = parts.split("/")[0], // 1
-        partName = `part${firstNumber}`; // part1, part2, part3, ...
-        if (parts.includes("/9")) {
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "nine";
-            if (isTransform) {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNineTransform[partName].push(start);
-                }
-            }
-            else {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsNine[partName].push(start);
-                }
-            }
-            return;
-        }
-        else if (parts.includes("/3")) {
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "three";
-            if (isTransform) {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThreeTransform[partName].push(start);
-                }
-            }
-            else {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsThree[partName].push(start);
-                }
-            }
-            return;
-        }
-        else if (parts.includes("/5")) {
-            // Indicating that it is default.
-            __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").type = "default";
-            if (isTransform) {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").partsTransform[partName].push(start);
-                }
-            }
-            else {
-                // @ts-ignore
-                if (Array.isArray(__classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts[partName])) {
-                    // @ts-ignore
-                    __classPrivateFieldGet(this, _CosmicAnimation_resources, "f").parts[partName].push(start);
-                }
-            }
-            return;
-        }
-    }
-    /**
-     * If `parts` is an array, it means the user entered:
-     *     @example function(start, parts)
-     *     @example function(1, ['1/3', '3/3'])
-     * This means that (start) contains the property to be saved, and each element of the array is iterated to save the first value, (start), in each part.
-     */
-    if (Array.isArray(parts)) {
-        for (let part of parts) {
-            if (typeof part !== "string") {
-                __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_error).call(this, `Data {${part}} is not accepted in {string[]}`);
-                return;
-            }
-            __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_addResources).call(this, start, "", part, isTransform);
-        }
-    }
-}, _CosmicAnimation_lettersToElements = function _CosmicAnimation_lettersToElements(spaceInLetters, appear = false) {
-    // Backup original content
-    __classPrivateFieldSet(this, _CosmicAnimation_originalContent, this.target.innerHTML, "f");
-    if (this.target.textContent) {
-        // Split the text content into an array of individual letters
-        let letters = this.target.textContent.split("");
-        // Clear the target element's HTML content
-        this.target.innerHTML = "";
-        // Iterate through each letter
-        letters.forEach((letter) => {
-            // Replace spaces, newlines, and tabs with an empty <span> with the specified margin
-            // Other letters are wrapped in <span> for individual animation
-            if (letter === " " || letter === "\n" || letter === "\t") {
-                this.target.innerHTML += (`
-						<span style="
-							${appear ? 'opacity: 0;' : ''}
-							display: inline-block;
-							margin: 0 ${spaceInLetters}px;
-						"></span>
-					`).trim();
-            }
-            else {
-                this.target.innerHTML += (`
-						<span style="
-							${appear ? 'opacity: 0;' : ''}
-							display: inline-block;
-						">${letter}</span>
-					`).trim();
-            }
-        });
-    }
-}, _CosmicAnimation_fadeOut = function _CosmicAnimation_fadeOut({ mode, spaceInLetters, time, random, appear }) {
-    // Transform the content of the target element into <span> elements for each letter to animate them individually.
-    __classPrivateFieldGet(this, _CosmicAnimation_instances, "m", _CosmicAnimation_lettersToElements).call(this, spaceInLetters, appear);
-    let index = 0, 
-    // Get the injected <span> elements.
-    childs = this.target.children, 
-    // Store the automatically generated IDs for each <span>.
-    ids = new Array(), 
-    // Used to assign random modes (if random is enabled).
-    randomModes = new Array("top", "right", "bottom", "left", "center");
-    // Function to generate unique random IDs for the <span> elements.
-    const createAutomaticRandIds = () => {
-        const randomId = Math.round(Math.random() * 1000);
-        if (ids.indexOf(randomId) === -1)
-            ids.push(randomId);
-        else
-            createAutomaticRandIds(); // Recursively generate a new ID if the current one already exists.
-    };
-    // Generate unique random IDs for each letter.
-    for (let i = 0; i < childs.length; i++)
-        createAutomaticRandIds();
-    // Iterate through each injected <span> element.
-    const interval = setInterval(() => {
-        const span = childs[index], randomId = `id${ids[index]}`;
-        span.setAttribute("id", randomId);
-        // If no specific direction is provided, fade letters out to random directions.
-        if (random) {
-            let randomMode = randomModes[Math.floor(Math.random() * randomModes.length)];
-            if (appear)
-                new _a("#" + randomId).appearTo(randomMode).execute();
-            else
-                new _a("#" + randomId).fadeOutTo(randomMode).execute();
-            // If a specific direction is provided, fade letters out to that direction.
-        }
-        else if (mode) {
-            if (appear)
-                new _a("#" + randomId).appearTo(mode).execute();
-            else
-                new _a("#" + randomId).fadeOutTo(mode).execute();
-            // If no direction or random flag is provided, simply fade the letter in or out without any direction.
-        }
-        else {
-            if (appear)
-                new _a("#" + randomId).appear().execute();
-            else
-                new _a("#" + randomId).fadeOut().execute();
-        }
-        index++;
-        // Stop the interval when all the <span> elements have been processed.
-        if (index >= childs.length)
-            clearInterval(interval);
-    }, time);
-}, _CosmicAnimation_validateAnimationSettings = function _CosmicAnimation_validateAnimationSettings() {
-    // The iteration count must be an integer or "Infinity".
-    if (!Number.isInteger(this.animation.iterationCount) && typeof this.animation.iterationCount !== "number") {
-        this.animation.iterationCount = 1;
-    }
-    // The duration must be a finite integer.
-    if (!Number.isFinite(this.animation.duration) || !Number.isInteger(this.animation.duration)) {
-        this.animation.duration = 1000;
-    }
-    // The delay must be a finite integer.
-    if (!Number.isFinite(this.animation.delay) || !Number.isInteger(this.animation.delay)) {
-        this.animation.delay = 0;
-    }
-};
 export default CosmicAnimation;

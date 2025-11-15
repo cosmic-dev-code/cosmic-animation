@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext", 
-    "outDir": "./dist", 
-    "rootDir": "./src", 
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true
-  }, 
+    "target": "ES6",                 // Establece el objetivo a ES6 o ESNext
+    "module": "ESNext",              // Usar módulos ES6 o más nuevos
+    "outDir": "./dist",              // Carpeta de salida para los archivos compilados
+    "rootDir": "./src",              // Carpeta raíz con los archivos fuente
+    "esModuleInterop": true,         // Para interoperabilidad entre módulos
+    "moduleResolution": "node",
+    "strict": true,                  // Activar la comprobación estricta de tipos
+    "skipLibCheck": true,            // No comprobar bibliotecas
+    "declaration": true,             // Generar archivos de declaración .d.ts
+  },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts"                  // Incluir todos los archivos .ts en src
   ]
 }

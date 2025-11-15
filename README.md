@@ -409,12 +409,25 @@ The parameters received are **(duration)** and **(delay)**.
 
     // It only appears from a broadcast.
     cosmicDiv.appear(1300, 0);
+
+    // Letters appear with 10px space and 150ms delay between each letter.
+    cosmicDiv.appearLettersRandom(10, 150);
+
+    // Animates the appearance of the text in an element letter by letter towards a specified direction.
+    cosmicDiv.appearLettersTo("bottom", 6, 100);
     
     // Appears from a blur towards the specified direction.
     cosmicDiv.appearTo("top", 1300, 0);
     cosmicDiv.appearTo("right", 1300, 0);
     cosmicDiv.appearTo("bottom", 1300, 0);
     cosmicDiv.appearTo("left", 1300, 0);
+
+    /**
+     * Fade in.
+    */
+
+   // The element will fade in over 1.5 seconds, with a 500ms delay.
+   cosmicDiv.fadeIn(1500, 500);
 
     /**
      * Fade out.
@@ -471,7 +484,7 @@ The parameters received are **(duration)** and **(delay)**.
 
 We have a few methods to finish the animation.
 
-## (terminate) Method
+## (ends) Method
 
 ```js
     // The time will be (x2) since the animation is repeated twice.
@@ -483,9 +496,9 @@ We have a few methods to finish the animation.
     // We run the animation.
     cosmicDiv.execute();
 
-    /* The (terminate) method is executed only when the animation ends, receive by parameter: 
+    /* The (ends) method is executed only when the animation ends, receive by parameter: 
         --- A callback that is executed when the animation ends. */
-    cosmicDiv.terminate(function(){
+    cosmicDiv.ends(function(){
         console.info("The animation is over");
     });
 ```
@@ -501,7 +514,7 @@ You can clean up all the animations you put in the element and the DOM.
     cosmicDiv.execute();
 
     // When the animation ends.
-    cosmicDiv.terminate(function(){
+    cosmicDiv.ends(function(){
         // We clean up the element animations.
         cosmicDiv.deleteAnimation();
         // New animations and we run.
@@ -519,33 +532,45 @@ You can manipulate the element as many times as you want, clean up animations an
 
     // First animations.
     cosmicDiv.animation.iterationCount = 2;
-    cosmicDiv.spiralTo("right");
+    cosmicDiv.fromWindowTo("right");
     cosmicDiv.execute();
 
     // At the end of the animation.
-    cosmicDiv.terminate(function(){
+    cosmicDiv.ends(function(){
         
         // Second animation.
-        cosmicDiv.deleteAnimation();
-        cosmicDiv.spiralTo("left");
+        cosmicDiv.reset();
+        cosmicDiv.fromWindowTo("left");
         cosmicDiv.execute();
 
-        cosmicDiv.terminate(() => {
+        cosmicDiv.ends(() => {
             // Third animation.
-            cosmicDiv.deleteAnimation();
+            cosmicDiv.reset();
             cosmicDiv.increment();
             cosmicDiv.execute();
 
-            cosmicDiv.terminate(() => {
+            cosmicDiv.ends(() => {
                 // Fourth animation.
-                cosmicDiv.deleteAnimation();
+                cosmicDiv.reset();
                 cosmicDiv.incrementPulse();
                 cosmicDiv.execute();
 
-                cosmicDiv.terminate(function(){
+                cosmicDiv.ends(function(){
                     console.info("The last animation is cleared.");
                 });		
             });
         });
     });
+```
+
+Executes actions asynchronously when the animation finishes. This method returns a promise that resolves when the animation ends successfully and rejects if an error occurs. It wraps the `ends` method in a promise, making it easier to work with asynchronous workflows.
+
+```js
+    cosmicDiv.asyncEnds()
+        .then(() => {
+            console.log("Animation finished successfully");
+        })
+        .catch((error) => {
+            console.error("Error during animation", error);
+        });
 ```
